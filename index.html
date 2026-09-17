@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>دفتر الحسابات اليومي</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f1f3f6; --surface:#ffffff; --surface-2:#f7f8fa; --text:#1c2129; --muted:#6d7480;
+    --border:#e6e8ec; --primary:#0d9488; --primary-d:#0f766e; --primary-bg:#e6f5f3;
+    --income:#16a34a; --income-bg:#e6f7ea; --expense:#dc2626; --expense-bg:#fdeaea;
+    --personal:#2563eb; --personal-bg:#e8f0fe; --company:#7c3aed; --company-bg:#f1eafc;
+    --shadow:0 1px 3px rgba(20,20,30,.07),0 1px 2px rgba(20,20,30,.04);
+    --shadow-lg:0 8px 30px rgba(20,20,30,.18);
+    --radius:16px; --radius-sm:10px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#14161a; --surface:#1d2026; --surface-2:#242830; --text:#eef0f3; --muted:#9aa1ac;
+      --border:#2c313a; --primary:#2dd4bf; --primary-d:#5eead4; --primary-bg:#123632;
+      --income:#4ade80; --income-bg:#12301c; --expense:#f87171; --expense-bg:#3a1717;
+      --personal:#60a5fa; --personal-bg:#152238; --company:#c4b5fd; --company-bg:#241a3a;
+      --shadow:0 1px 3px rgba(0,0,0,.4),0 1px 2px rgba(0,0,0,.3);
+      --shadow-lg:0 8px 30px rgba(0,0,0,.55);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#14161a; --surface:#1d2026; --surface-2:#242830; --text:#eef0f3; --muted:#9aa1ac;
+    --border:#2c313a; --primary:#2dd4bf; --primary-d:#5eead4; --primary-bg:#123632;
+    --income:#4ade80; --income-bg:#12301c; --expense:#f87171; --expense-bg:#3a1717;
+    --personal:#60a5fa; --personal-bg:#152238; --company:#c4b5fd; --company-bg:#241a3a;
+    --shadow:0 1px 3px rgba(0,0,0,.4),0 1px 2px rgba(0,0,0,.3);
+    --shadow-lg:0 8px 30px rgba(0,0,0,.55);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg); color:var(--text);
+    font-family:'Tajawal', system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+    -webkit-tap-highlight-color:transparent;
+  }
+  #shell{max-width:480px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;position:relative;overflow-x:hidden;}
+  header{position:sticky;top:0;z-index:20;background:var(--surface);border-bottom:1px solid var(--border);padding:14px 16px 10px;}
+  .headrow{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+  .brand{display:flex;align-items:center;gap:10px;}
+  .brand .logo{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--primary),var(--primary-d));display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;}
+  .brand h1{font-size:16px;font-weight:800;margin:0;}
+  .brand p{font-size:11px;color:var(--muted);margin:1px 0 0;display:flex;align-items:center;gap:5px;}
+  .dotstatus{width:7px;height:7px;border-radius:50%;display:inline-block;background:#9ca3af;}
+  .dotstatus.on{background:var(--income);}
+  .dotstatus.off{background:var(--expense);}
+  .icon-btn{width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:var(--surface-2);display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;color:var(--text);flex-shrink:0;}
+  .icon-btn:active{transform:scale(.93);}
+
+  main{flex:1;padding-bottom:110px;}
+  .section{padding:14px 16px 0;}
+  .section-title{font-size:13px;font-weight:700;color:var(--muted);margin:0 0 8px;display:flex;align-items:center;gap:6px;}
+
+  .chiprow{display:flex;gap:8px;overflow-x:auto;padding:2px 16px 10px;scrollbar-width:none;}
+  .chiprow::-webkit-scrollbar{display:none;}
+  .chip{flex-shrink:0;border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:999px;padding:7px 14px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;}
+  .chip.active{background:var(--primary);border-color:var(--primary);color:#fff;}
+  .chip.small{padding:5px 11px;font-size:12px;}
+
+  .customrange{display:none;gap:8px;padding:0 16px 10px;}
+  .customrange.show{display:flex;}
+  .customrange input{flex:1;border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:var(--radius-sm);padding:8px 10px;font-family:inherit;font-size:13px;}
+
+  .totalbar{background:linear-gradient(135deg,var(--primary-d),var(--primary));border-radius:var(--radius);padding:16px 18px;color:#fff;box-shadow:var(--shadow);margin-bottom:12px;}
+  .totalbar .lbl{font-size:12px;opacity:.85;font-weight:500;}
+  .totalbar .val{font-size:26px;font-weight:800;margin-top:2px;}
+  .totalbar .sub{display:flex;gap:16px;margin-top:10px;font-size:12px;opacity:.9;}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;box-shadow:var(--shadow);}
+  .card .ctitle{font-size:12px;font-weight:700;display:flex;align-items:center;gap:6px;margin-bottom:8px;}
+  .dot{width:8px;height:8px;border-radius:50%;display:inline-block;}
+  .card .row{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:4px;}
+  .card .row b{font-weight:700;font-size:13px;}
+  .card .net{margin-top:8px;padding-top:8px;border-top:1px dashed var(--border);display:flex;justify-content:space-between;font-size:13px;font-weight:800;}
+
+  .comparewrap{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px;}
+  .comparewrap::-webkit-scrollbar{display:none;}
+  .pcard{flex:1;min-width:150px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;box-shadow:var(--shadow);}
+  .pcard .phead{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+  .pcard .phead .av{width:26px;height:26px;border-radius:50%;background:var(--primary-bg);color:var(--primary-d);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0;}
+  .pcard .phead b{font-size:13px;}
+  .pcard .prow{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:3px;}
+  .pcard .pnet{margin-top:8px;padding-top:8px;border-top:1px dashed var(--border);font-size:14px;font-weight:800;}
+
+  .empty{text-align:center;color:var(--muted);font-size:13px;padding:30px 10px;}
+
+  .daylabel{font-size:12px;font-weight:700;color:var(--muted);margin:14px 0 6px;padding:0 2px;}
+  .txitem{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:11px 12px;display:flex;align-items:center;gap:10px;margin-bottom:8px;box-shadow:var(--shadow);}
+  .txicon{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;font-weight:800;}
+  .txbody{flex:1;min-width:0;}
+  .txtitle{font-size:13.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .txmeta{font-size:11px;color:var(--muted);display:flex;gap:6px;align-items:center;margin-top:2px;flex-wrap:wrap;}
+  .badge{font-size:10.5px;font-weight:700;border-radius:6px;padding:1px 6px;}
+  .txamount{font-size:14.5px;font-weight:800;flex-shrink:0;text-align:left;}
+  .txactions{display:flex;gap:4px;margin-right:4px;}
+  .miniicon{width:26px;height:26px;border-radius:8px;border:1px solid var(--border);background:var(--surface-2);display:flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer;color:var(--muted);}
+
+  .fab{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--primary-d),var(--primary));color:#fff;font-size:28px;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-lg);border:none;cursor:pointer;z-index:30;}
+  .fab:active{transform:translateX(-50%) scale(.94);}
+
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:40;opacity:0;pointer-events:none;transition:opacity .2s;}
+  .overlay.open{opacity:1;pointer-events:auto;}
+  .sheet{position:fixed;left:0;right:0;bottom:0;max-width:480px;margin:0 auto;background:var(--surface);border-radius:20px 20px 0 0;padding:16px 16px 24px;z-index:41;transform:translateY(105%);transition:transform .25s ease;box-shadow:var(--shadow-lg);max-height:88vh;overflow-y:auto;}
+  .sheet.open{transform:translateY(0);}
+  .sheethandle{width:38px;height:4px;background:var(--border);border-radius:99px;margin:0 auto 12px;}
+  .sheettitle{font-size:16px;font-weight:800;margin:0 0 4px;}
+  .sheetsub{font-size:12px;color:var(--muted);margin:0 0 14px;}
+  .field{margin-bottom:14px;}
+  .field label{display:block;font-size:12.5px;font-weight:700;color:var(--muted);margin-bottom:6px;}
+  .seg{display:flex;gap:8px;}
+  .seg button{flex:1;border:1.5px solid var(--border);background:var(--surface-2);color:var(--text);border-radius:var(--radius-sm);padding:11px 6px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:inherit;}
+  .seg button.sel-income{background:var(--income-bg);border-color:var(--income);color:var(--income);}
+  .seg button.sel-expense{background:var(--expense-bg);border-color:var(--expense);color:var(--expense);}
+  .seg button.sel-personal{background:var(--personal-bg);border-color:var(--personal);color:var(--personal);}
+  .seg button.sel-company{background:var(--company-bg);border-color:var(--company);color:var(--company);}
+  .field input, .field textarea{width:100%;border:1.5px solid var(--border);background:var(--surface-2);color:var(--text);border-radius:var(--radius-sm);padding:11px 12px;font-size:14px;font-family:inherit;}
+  .field textarea{resize:none;min-height:44px;}
+  .sheetbtns{display:flex;gap:10px;margin-top:6px;}
+  .btn{flex:1;border:none;border-radius:var(--radius-sm);padding:13px;font-size:14.5px;font-weight:800;cursor:pointer;font-family:inherit;}
+  .btn-primary{background:var(--primary);color:#fff;}
+  .btn-ghost{background:var(--surface-2);color:var(--muted);border:1px solid var(--border);}
+  .btn-danger{background:var(--expense-bg);color:var(--expense);}
+  .btn[disabled]{opacity:.6;}
+
+  .banner{margin:0 16px 10px;background:var(--expense-bg);color:var(--expense);border-radius:var(--radius-sm);padding:9px 12px;font-size:12px;font-weight:700;display:none;text-align:center;}
+  .banner.show{display:block;}
+
+  .loading{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:70vh;text-align:center;padding:30px;color:var(--muted);gap:10px;font-size:14px;}
+  .spinner{width:26px;height:26px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin 0.8s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+<div id="shell">
+  <div id="app" class="loading"><div class="spinner"></div><div>...جارِ الاتصال</div></div>
+</div>
+<div class="overlay" id="overlay"></div>
+<div class="sheet" id="sheet"></div>
+<script>
+(function(){
+  "use strict";
+
+  // ====== إعداد Firebase (Realtime Database عبر REST، بدون SDK) ======
+  var DB_URL = "https://hesapat-app-default-rtdb.firebaseio.com";
+  var POLL_MS = 4000;
+
+  var LS_ME = 'acc_me_v1';
+  var LS_CACHE = 'acc_cache_v1';
+
+  var state = {
+    me:null, tx:[], editingId:null, online:false, pollTimer:null,
+    filters:{range:'month', from:null, to:null, scope:'all', person:'all'}
+  };
+
+  function esc(s){
+    return String(s==null?"":s).replace(/[&<>"']/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+  function pad(n){ return String(n).padStart(2,'0'); }
+  function localISO(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+  function todayISO(){ return localISO(new Date()); }
+  function fmtMoney(n){
+    var v = Math.round((n||0)*100)/100;
+    var s = new Intl.NumberFormat('ar', {maximumFractionDigits:2, minimumFractionDigits:(v%1!==0)?2:0}).format(Math.abs(v));
+    return (v<0? '-' : '') + s + ' ₪';
+  }
+  function fmtDateLabel(iso){
+    var d = new Date(iso+'T00:00:00');
+    var days=['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+    var months=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+    var t = todayISO(); var y=localISO(new Date(Date.now()-86400000));
+    if(iso===t) return 'اليوم';
+    if(iso===y) return 'الأمس';
+    return days[d.getDay()]+'، '+d.getDate()+' '+months[d.getMonth()];
+  }
+  function uid(){
+    if(window.crypto && crypto.randomUUID) return crypto.randomUUID();
+    return 'id-'+Date.now()+'-'+Math.random().toString(36).slice(2,10);
+  }
+
+  // ---------- Firebase REST ----------
+  async function fbGetAll(){
+    var res = await fetch(DB_URL+'/transactions.json', {cache:'no-store'});
+    if(!res.ok) throw new Error('fetch_failed');
+    var data = await res.json();
+    var list = [];
+    if(data){ Object.keys(data).forEach(function(id){ var t = data[id]; t.id = id; list.push(t); }); }
+    return list;
+  }
+  async function fbPut(id, data){
+    var res = await fetch(DB_URL+'/transactions/'+id+'.json', {
+      method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data)
+    });
+    if(!res.ok) throw new Error('save_failed');
+  }
+  async function fbDelete(id){
+    var res = await fetch(DB_URL+'/transactions/'+id+'.json', {method:'DELETE'});
+    if(!res.ok) throw new Error('delete_failed');
+  }
+
+  function loadMe(){ try{ return JSON.parse(localStorage.getItem(LS_ME)||'null'); }catch(e){ return null; } }
+  function saveMe(me){ localStorage.setItem(LS_ME, JSON.stringify(me)); }
+  function loadCache(){ try{ return JSON.parse(localStorage.getItem(LS_CACHE)||'[]'); }catch(e){ return []; } }
+  function saveCache(list){ try{ localStorage.setItem(LS_CACHE, JSON.stringify(list)); }catch(e){} }
+
+  // ---------- منطق التصفية والتجميع ----------
+  function getRangeDates(){
+    var f = state.filters; var t = todayISO();
+    if(f.range==='today') return {from:t, to:t};
+    if(f.range==='week'){ var d=new Date(); d.setDate(d.getDate()-6); return {from:localISO(d), to:t}; }
+    if(f.range==='month'){ var d2=new Date(); d2.setDate(1); return {from:localISO(d2), to:t}; }
+    if(f.range==='all') return {from:null, to:null};
+    return {from:f.from||null, to:f.to||null};
+  }
+  function passesRange(dateStr, range){
+    if(range.from && dateStr < range.from) return false;
+    if(range.to && dateStr > range.to) return false;
+    return true;
+  }
+  function distinctPeople(list){
+    var ids = [], seen = {};
+    list.forEach(function(t){ if(!seen[t.ownerId]){ seen[t.ownerId]=true; ids.push({id:t.ownerId, name:t.ownerName}); } });
+    return ids;
+  }
+  function computeFiltered(){
+    var range = getRangeDates(); var f = state.filters;
+    return state.tx.filter(function(t){
+      if(!passesRange(t.date, range)) return false;
+      if(f.scope!=='all' && t.scope!==f.scope) return false;
+      if(f.person!=='all' && t.ownerId!==f.person) return false;
+      return true;
+    }).sort(function(a,b){
+      if(a.date!==b.date) return a.date<b.date?1:-1;
+      return (b.createdAt||0)-(a.createdAt||0);
+    });
+  }
+  function computeTotals(list){
+    var res = {personal:{income:0,expense:0}, company:{income:0,expense:0}};
+    list.forEach(function(t){
+      var s = res[t.scope]; if(!s){ s = res[t.scope] = {income:0,expense:0}; }
+      s[t.type] += (t.amount||0);
+    });
+    Object.keys(res).forEach(function(k){ res[k].net = res[k].income - res[k].expense; });
+    var totIncome=0, totExpense=0;
+    Object.keys(res).forEach(function(k){ totIncome+=res[k].income; totExpense+=res[k].expense; });
+    return {byScope:res, total:{income:totIncome, expense:totExpense, net:totIncome-totExpense}};
+  }
+  function scopeLabel(s){ return s==='company' ? 'الشركة' : 'شخصي'; }
+  function scopeColorVar(s){ return s==='company' ? '--company' : '--personal'; }
+  function scopeBgVar(s){ return s==='company' ? '--company-bg' : '--personal-bg'; }
+  function initials(name){ return (name||'؟').trim().slice(0,1); }
+
+  // ---------- عرض ----------
+  var appEl, overlayEl, sheetEl;
+
+  function renderFilters(){
+    var f = state.filters;
+    var ranges = [['today','اليوم'],['week','٧ أيام'],['month','هذا الشهر'],['all','الكل'],['custom','تحديد']];
+    var html = '<div class="chiprow" id="rangeChips">';
+    ranges.forEach(function(r){ html += '<button class="chip'+(f.range===r[0]?' active':'')+'" data-range="'+r[0]+'">'+r[1]+'</button>'; });
+    html += '</div>';
+    html += '<div class="customrange'+(f.range==='custom'?' show':'')+'" id="customRangeBox">'+
+      '<input type="date" id="fromDate" value="'+(f.from||'')+'">'+
+      '<input type="date" id="toDate" value="'+(f.to||'')+'">'+
+    '</div>';
+    var scopes = [['all','كل الفئات'],['personal','شخصي'],['company','الشركة']];
+    html += '<div class="chiprow">';
+    scopes.forEach(function(s){ html += '<button class="chip small" data-scope="'+s[0]+'" style="'+(f.scope===s[0]?'background:var(--primary);border-color:var(--primary);color:#fff':'')+'">'+s[1]+'</button>'; });
+    html += '</div>';
+    var people = distinctPeople(state.tx);
+    if(people.length>1){
+      html += '<div class="chiprow" id="personChips">';
+      html += '<button class="chip small'+(f.person==='all'?' active':'')+'" data-person="all">الكل</button>';
+      people.forEach(function(p){
+        var label = p.id===state.me.id ? 'أنا' : esc(p.name||'مستخدم آخر');
+        html += '<button class="chip small'+(f.person===p.id?' active':'')+'" data-person="'+esc(p.id)+'">'+label+'</button>';
+      });
+      html += '</div>';
+    }
+    return html;
+  }
+
+  function renderSummary(totals){
+    var t = totals.total;
+    var html = '<div class="totalbar">'+
+      '<div class="lbl">الصافي في الفترة المحددة</div>'+
+      '<div class="val">'+fmtMoney(t.net)+'</div>'+
+      '<div class="sub"><span>▲ قبض '+fmtMoney(t.income)+'</span><span>▼ صرف '+fmtMoney(t.expense)+'</span></div>'+
+    '</div>';
+    html += '<div class="grid2">';
+    ['personal','company'].forEach(function(sc){
+      var d = totals.byScope[sc] || {income:0,expense:0,net:0};
+      html += '<div class="card">'+
+        '<div class="ctitle"><span class="dot" style="background:var('+scopeColorVar(sc)+')"></span>'+scopeLabel(sc)+'</div>'+
+        '<div class="row"><span>قبض</span><b style="color:var(--income)">'+fmtMoney(d.income)+'</b></div>'+
+        '<div class="row"><span>صرف</span><b style="color:var(--expense)">'+fmtMoney(d.expense)+'</b></div>'+
+        '<div class="net" style="color:'+(d.net<0?'var(--expense)':'var(--income)')+'"><span>الصافي</span><span>'+fmtMoney(d.net)+'</span></div>'+
+      '</div>';
+    });
+    html += '</div>';
+    return html;
+  }
+
+  function renderCompareHtml(){
+    var range = getRangeDates(); var f = state.filters;
+    var scoped = state.tx.filter(function(t){
+      if(!passesRange(t.date, range)) return false;
+      if(f.scope!=='all' && t.scope!==f.scope) return false;
+      return true;
+    });
+    var people = distinctPeople(scoped);
+    if(people.length < 2) return '';
+    var groups = {};
+    people.forEach(function(p){ groups[p.id] = {income:0, expense:0, name:p.name}; });
+    scoped.forEach(function(t){ groups[t.ownerId][t.type] += (t.amount||0); });
+    var html = '<div class="section-title">📊 مقارنة الحركات</div><div class="comparewrap">';
+    people.forEach(function(p){
+      var g = groups[p.id]; var net = g.income - g.expense;
+      var isMe = p.id===state.me.id;
+      var label = isMe ? 'أنا' : (p.name || 'مستخدم آخر');
+      html += '<div class="pcard">'+
+        '<div class="phead"><div class="av">'+esc(initials(label))+'</div><b>'+esc(label)+'</b></div>'+
+        '<div class="prow"><span>قبض</span><span style="color:var(--income);font-weight:700">'+fmtMoney(g.income)+'</span></div>'+
+        '<div class="prow"><span>صرف</span><span style="color:var(--expense);font-weight:700">'+fmtMoney(g.expense)+'</span></div>'+
+        '<div class="pnet" style="color:'+(net<0?'var(--expense)':'var(--income)')+'">الصافي: '+fmtMoney(net)+'</div>'+
+      '</div>';
+    });
+    html += '</div>';
+    return html;
+  }
+
+  function renderListHtml(list){
+    if(list.length===0) return '<div class="empty">لا توجد حركات في هذه الفترة 🗒️</div>';
+    var showWho = distinctPeople(state.tx).length>1 && state.filters.person==='all';
+    var groups = {}; var order = [];
+    list.forEach(function(t){ if(!groups[t.date]){ groups[t.date]=[]; order.push(t.date); } groups[t.date].push(t); });
+    var html = '';
+    order.forEach(function(date){
+      html += '<div class="daylabel">'+fmtDateLabel(date)+'</div>';
+      groups[date].forEach(function(t){
+        var isIncome = t.type==='income';
+        var canEdit = t.ownerId===state.me.id;
+        var who = '';
+        if(showWho){
+          var label = t.ownerId===state.me.id ? 'أنا' : esc(t.ownerName||'مستخدم آخر');
+          who = '<span>'+label+'</span>';
+        }
+        html += '<div class="txitem">'+
+          '<div class="txicon" style="background:'+(isIncome?'var(--income-bg)':'var(--expense-bg)')+';color:'+(isIncome?'var(--income)':'var(--expense)')+'">'+(isIncome?'↑':'↓')+'</div>'+
+          '<div class="txbody">'+
+            '<div class="txtitle">'+(t.note? esc(t.note) : (isIncome?'قبض':'صرف'))+'</div>'+
+            '<div class="txmeta">'+
+              '<span class="badge" style="background:var('+scopeBgVar(t.scope)+');color:var('+scopeColorVar(t.scope)+')">'+scopeLabel(t.scope)+'</span>'+
+              who+
+            '</div>'+
+          '</div>'+
+          '<div class="txamount" style="color:'+(isIncome?'var(--income)':'var(--expense)')+'">'+(isIncome?'+':'-')+fmtMoney(t.amount)+'</div>'+
+          (canEdit ? '<div class="txactions">'+
+            '<div class="miniicon" data-edit="'+t.id+'">✎</div>'+
+            '<div class="miniicon" data-del="'+t.id+'">✕</div>'+
+          '</div>' : '')+
+        '</div>';
+      });
+    });
+    return html;
+  }
+
+  function renderAll(){
+    var filtered = computeFiltered();
+    var totals = computeTotals(filtered);
+    var html = '';
+    html += '<div class="banner'+(state.online?'':' show')+'" id="offlineBanner">⚠️ غير متصل حالياً — بتشوف آخر نسخة محفوظة على جهازك</div>';
+    html += '<div class="section" style="padding-top:10px;">'+renderFilters()+'</div>';
+    html += '<div class="section">'+renderSummary(totals)+'</div>';
+    var compareHtml = renderCompareHtml();
+    if(compareHtml) html += '<div class="section">'+compareHtml+'</div>';
+    var listHtml = renderListHtml(filtered);
+    html += '<div class="section" style="padding-bottom:20px;"><div class="section-title">📋 الحركات</div>'+listHtml+'</div>';
+    appEl.innerHTML = html;
+    attachEvents();
+    var dot = document.getElementById('statusDot');
+    if(dot){ dot.className = 'dotstatus '+(state.online?'on':'off'); }
+  }
+
+  function attachEvents(){
+    appEl.querySelectorAll('[data-range]').forEach(function(el){ el.addEventListener('click', function(){ state.filters.range = el.getAttribute('data-range'); renderAll(); }); });
+    appEl.querySelectorAll('[data-scope]').forEach(function(el){ el.addEventListener('click', function(){ state.filters.scope = el.getAttribute('data-scope'); renderAll(); }); });
+    appEl.querySelectorAll('[data-person]').forEach(function(el){ el.addEventListener('click', function(){ state.filters.person = el.getAttribute('data-person'); renderAll(); }); });
+    var fromI = appEl.querySelector('#fromDate'); var toI = appEl.querySelector('#toDate');
+    if(fromI) fromI.addEventListener('change', function(){ state.filters.from = fromI.value||null; renderAll(); });
+    if(toI) toI.addEventListener('change', function(){ state.filters.to = toI.value||null; renderAll(); });
+    appEl.querySelectorAll('[data-edit]').forEach(function(el){ el.addEventListener('click', function(){ openSheet(el.getAttribute('data-edit')); }); });
+    appEl.querySelectorAll('[data-del]').forEach(function(el){ el.addEventListener('click', function(){ deleteTx(el.getAttribute('data-del')); }); });
+  }
+
+  // ---------- ورقة إضافة/تعديل ----------
+  var sheetState = {type:'expense', scope:'personal', amount:'', date:'', note:''};
+
+  function openSheet(id){
+    state.editingId = id||null;
+    if(id){
+      var tx = state.tx.find(function(t){return t.id===id;});
+      if(!tx) return;
+      sheetState = {type:tx.type, scope:tx.scope, amount:String(tx.amount), date:tx.date, note:tx.note||''};
+    } else {
+      sheetState = {type:'expense', scope:'personal', amount:'', date:todayISO(), note:''};
+    }
+    renderAddSheet();
+    overlayEl.classList.add('open'); sheetEl.classList.add('open');
+  }
+  function closeSheet(){ overlayEl.classList.remove('open'); sheetEl.classList.remove('open'); state.editingId = null; }
+
+  function renderAddSheet(){
+    var s = sheetState;
+    var html = '<div class="sheethandle"></div>'+
+      '<div class="sheettitle">'+(state.editingId?'تعديل حركة':'إضافة حركة جديدة')+'</div>'+
+      '<div class="field"><label>نوع الحركة</label><div class="seg">'+
+        '<button data-set-type="income" class="'+(s.type==='income'?'sel-income':'')+'">↑ قبض</button>'+
+        '<button data-set-type="expense" class="'+(s.type==='expense'?'sel-expense':'')+'">↓ صرف</button>'+
+      '</div></div>'+
+      '<div class="field"><label>الفئة</label><div class="seg">'+
+        '<button data-set-scope="personal" class="'+(s.scope==='personal'?'sel-personal':'')+'">شخصي</button>'+
+        '<button data-set-scope="company" class="'+(s.scope==='company'?'sel-company':'')+'">الشركة</button>'+
+      '</div></div>'+
+      '<div class="field"><label>المبلغ (₪)</label><input type="number" inputmode="decimal" step="0.01" min="0" id="fAmount" value="'+esc(s.amount)+'" placeholder="0.00"></div>'+
+      '<div class="field"><label>التاريخ</label><input type="date" id="fDate" value="'+esc(s.date)+'"></div>'+
+      '<div class="field"><label>ملاحظة (اختياري)</label><textarea id="fNote" placeholder="مثال: فاتورة كهرباء، دفعة نزيل...">'+esc(s.note)+'</textarea></div>'+
+      '<div class="sheetbtns">'+
+        (state.editingId ? '<button class="btn btn-danger" id="btnDelete">حذف</button>' : '')+
+        '<button class="btn btn-ghost" id="btnCancel">إلغاء</button>'+
+        '<button class="btn btn-primary" id="btnSave">حفظ</button>'+
+      '</div>';
+    sheetEl.innerHTML = html;
+    sheetEl.querySelectorAll('[data-set-type]').forEach(function(el){ el.addEventListener('click', function(){ sheetState.type = el.getAttribute('data-set-type'); renderAddSheet(); }); });
+    sheetEl.querySelectorAll('[data-set-scope]').forEach(function(el){ el.addEventListener('click', function(){ sheetState.scope = el.getAttribute('data-set-scope'); renderAddSheet(); }); });
+    sheetEl.querySelector('#fAmount').addEventListener('input', function(e){ sheetState.amount = e.target.value; });
+    sheetEl.querySelector('#fDate').addEventListener('input', function(e){ sheetState.date = e.target.value; });
+    sheetEl.querySelector('#fNote').addEventListener('input', function(e){ sheetState.note = e.target.value; });
+    sheetEl.querySelector('#btnCancel').addEventListener('click', closeSheet);
+    sheetEl.querySelector('#btnSave').addEventListener('click', saveTxFromSheet);
+    var delBtn = sheetEl.querySelector('#btnDelete');
+    if(delBtn) delBtn.addEventListener('click', function(){ var id=state.editingId; closeSheet(); deleteTx(id); });
+  }
+
+  async function saveTxFromSheet(){
+    var s = sheetState;
+    var amount = parseFloat(String(s.amount).replace(',', '.'));
+    if(!amount || amount<=0){ alert('الرجاء إدخال مبلغ صحيح أكبر من صفر'); return; }
+    if(!s.date){ alert('الرجاء تحديد التاريخ'); return; }
+    var btn = sheetEl.querySelector('#btnSave');
+    btn.disabled = true; btn.textContent = 'جارِ الحفظ...';
+
+    var id = state.editingId || uid();
+    var data;
+    if(state.editingId){
+      var existing = state.tx.find(function(t){return t.id===id;}) || {};
+      data = Object.assign({}, existing, {type:s.type, scope:s.scope, amount:amount, date:s.date, note:(s.note||'').trim()});
+    } else {
+      data = {type:s.type, scope:s.scope, amount:amount, date:s.date, note:(s.note||'').trim(), ownerId:state.me.id, ownerName:state.me.name, createdAt: Date.now()};
+    }
+    delete data.id;
+
+    // تحديث محلي فوري (تفاؤلي)
+    var idx = state.tx.findIndex(function(t){return t.id===id;});
+    var localCopy = Object.assign({id:id}, data);
+    if(idx>-1) state.tx[idx] = localCopy; else state.tx.push(localCopy);
+    saveCache(state.tx);
+    closeSheet();
+    renderAll();
+
+    try{
+      await fbPut(id, data);
+      state.online = true;
+      refreshFromServer();
+    }catch(e){
+      state.online = false;
+      renderAll();
+      alert('تعذّر الحفظ على السيرفر — تأكد من الاتصال بالإنترنت وحاول ثانيةً. الحركة محفوظة مؤقتاً على جهازك فقط.');
+    }
+  }
+
+  async function deleteTx(id){
+    if(!confirm('هل تريد حذف هذه الحركة؟')) return;
+    state.tx = state.tx.filter(function(t){ return t.id!==id; });
+    saveCache(state.tx);
+    renderAll();
+    try{ await fbDelete(id); state.online = true; }
+    catch(e){ state.online = false; alert('تعذّر الحذف من السيرفر، تأكد من الاتصال بالإنترنت'); }
+    renderAll();
+  }
+
+  // ---------- المزامنة مع السيرفر ----------
+  async function refreshFromServer(){
+    try{
+      var list = await fbGetAll();
+      state.tx = list;
+      state.online = true;
+      saveCache(list);
+    }catch(e){
+      state.online = false;
+    }
+    renderAll();
+  }
+
+  function startPolling(){
+    if(state.pollTimer) clearInterval(state.pollTimer);
+    state.pollTimer = setInterval(refreshFromServer, POLL_MS);
+    document.addEventListener('visibilitychange', function(){
+      if(document.visibilityState==='visible') refreshFromServer();
+    });
+  }
+
+  // ---------- onboarding (اسم فقط، بدون أي حساب) ----------
+  function openOnboarding(){
+    var html = '<div class="sheethandle"></div>'+
+      '<div class="sheettitle">أهلاً 👋</div>'+
+      '<div class="sheetsub">اكتب اسمك مرة وحدة بس عشان يميّز حركاتك عن حركات الطرف التاني.</div>'+
+      '<div class="field"><label>اسمك</label><input type="text" id="fName" placeholder="مثال: أحمد"></div>'+
+      '<div class="sheetbtns"><button class="btn btn-primary" id="btnStart" style="width:100%;">ابدأ</button></div>';
+    sheetEl.innerHTML = html;
+    overlayEl.classList.add('open'); sheetEl.classList.add('open');
+    var input = sheetEl.querySelector('#fName');
+    setTimeout(function(){ input.focus(); }, 200);
+    function start(){
+      var name = input.value.trim();
+      if(!name){ input.focus(); return; }
+      state.me = {id: uid(), name: name};
+      saveMe(state.me);
+      overlayEl.classList.remove('open'); sheetEl.classList.remove('open');
+      startApp();
+    }
+    sheetEl.querySelector('#btnStart').addEventListener('click', start);
+    input.addEventListener('keydown', function(e){ if(e.key==='Enter') start(); });
+  }
+
+  function startApp(){
+    appEl.innerHTML = '';
+    var existingHeader = document.querySelector('header');
+    if(existingHeader) existingHeader.remove();
+    var header = document.createElement('header');
+    header.innerHTML =
+      '<div class="headrow">'+
+        '<div class="brand"><div class="logo">💰</div><div><h1>دفتر الحسابات اليومي</h1><p><span class="dotstatus" id="statusDot"></span>'+esc(state.me.name)+' · مزامنة مباشرة</p></div></div>'+
+        '<div style="display:flex;gap:8px;align-items:center;">'+
+          '<div class="icon-btn" id="refreshBtn" title="تحديث الآن">↻</div>'+
+        '</div>'+
+      '</div>';
+    document.getElementById('shell').insertBefore(header, appEl);
+    document.getElementById('refreshBtn').addEventListener('click', refreshFromServer);
+
+    if(!document.querySelector('.fab')){
+      var fab = document.createElement('button');
+      fab.className = 'fab'; fab.textContent = '+';
+      fab.addEventListener('click', function(){ openSheet(null); });
+      document.getElementById('shell').appendChild(fab);
+    }
+
+    // تحميل أولي: من الكاش فوراً، ثم من السيرفر
+    state.tx = loadCache();
+    renderAll();
+    refreshFromServer();
+    startPolling();
+  }
+
+  function boot(){
+    appEl = document.getElementById('app');
+    overlayEl = document.getElementById('overlay');
+    sheetEl = document.getElementById('sheet');
+    overlayEl.addEventListener('click', closeSheet);
+
+    state.me = loadMe();
+    appEl.className = '';
+    if(!state.me){ appEl.innerHTML = ''; openOnboarding(); }
+    else { startApp(); }
+  }
+
+  boot();
+})();
+</script>
+</body>
+</html>
