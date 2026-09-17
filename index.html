@@ -134,6 +134,18 @@
   .banner{margin:0 16px 10px;background:var(--expense-bg);color:var(--expense);border-radius:var(--radius-sm);padding:9px 12px;font-size:12px;font-weight:700;display:none;text-align:center;}
   .banner.show{display:block;}
 
+  .pinscreen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:30px;text-align:center;}
+  .pinscreen .logo{width:64px;height:64px;border-radius:18px;background:linear-gradient(135deg,var(--primary-d),var(--primary));display:flex;align-items:center;justify-content:center;font-size:30px;margin-bottom:18px;}
+  .pinscreen h2{font-size:17px;font-weight:800;margin:0 0 4px;}
+  .pinscreen p{font-size:12.5px;color:var(--muted);margin:0 0 22px;}
+  .pindots{display:flex;gap:14px;margin-bottom:22px;}
+  .pindot{width:16px;height:16px;border-radius:50%;border:2px solid var(--border);background:transparent;transition:.15s;}
+  .pindot.filled{background:var(--primary);border-color:var(--primary);}
+  .pindot.err{background:var(--expense);border-color:var(--expense);}
+  .pinpad{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;width:100%;max-width:280px;}
+  .pinkey{aspect-ratio:1;border-radius:50%;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:20px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+  .pinkey:active{background:var(--surface-2);}
+  .pinkey.ghost{border:none;background:transparent;box-shadow:none;}
   .loading{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:70vh;text-align:center;padding:30px;color:var(--muted);gap:10px;font-size:14px;}
   .spinner{width:26px;height:26px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin 0.8s linear infinite;}
   @keyframes spin{to{transform:rotate(360deg);}}
@@ -155,6 +167,8 @@
 
   var LS_ME = 'acc_me_v1';
   var LS_CACHE = 'acc_cache_v1';
+  var LS_PINOK = 'acc_pinok_v1';
+  var APP_PIN = '2026';
 
   var state = {
     me:null, tx:[], editingId:null, online:false, pollTimer:null,
@@ -189,8 +203,10 @@
   }
 
   // ---------- Firebase REST ----------
+  var DATA_PATH = 'tx_7q2m9k1z';
+
   async function fbGetAll(){
-    var res = await fetch(DB_URL+'/transactions.json', {cache:'no-store'});
+    var res = await fetch(DB_URL+'/'+DATA_PATH+'.json', {cache:'no-store'});
     if(!res.ok) throw new Error('fetch_failed');
     var data = await res.json();
     var list = [];
@@ -198,13 +214,13 @@
     return list;
   }
   async function fbPut(id, data){
-    var res = await fetch(DB_URL+'/transactions/'+id+'.json', {
+    var res = await fetch(DB_URL+'/'+DATA_PATH+'/'+id+'.json', {
       method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data)
     });
     if(!res.ok) throw new Error('save_failed');
   }
   async function fbDelete(id){
-    var res = await fetch(DB_URL+'/transactions/'+id+'.json', {method:'DELETE'});
+    var res = await fetch(DB_URL+'/'+DATA_PATH+'/'+id+'.json', {method:'DELETE'});
     if(!res.ok) throw new Error('delete_failed');
   }
 
@@ -572,11 +588,68 @@
     startPolling();
   }
 
+  function isPinOk(){
+    try{ return localStorage.getItem(LS_PINOK)==='1'; }catch(e){ return false; }
+  }
+  function markPinOk(){
+    try{ localStorage.setItem(LS_PINOK,'1'); }catch(e){}
+  }
+
+  function renderPinScreen(){
+    var entered = '';
+    appEl.className = '';
+    appEl.innerHTML =
+      '<div class="pinscreen">'+
+        '<div class="logo">🔒</div>'+
+        '<h2>دفتر الحسابات اليومي</h2>'+
+        '<p>أدخل الرمز السري للدخول</p>'+
+        '<div class="pindots" id="pinDots">'+
+          '<div class="pindot"></div><div class="pindot"></div><div class="pindot"></div><div class="pindot"></div>'+
+        '</div>'+
+        '<div class="pinpad" id="pinPad">'+
+          [1,2,3,4,5,6,7,8,9].map(function(n){ return '<button class="pinkey" data-k="'+n+'">'+n+'</button>'; }).join('')+
+          '<div class="pinkey ghost"></div>'+
+          '<button class="pinkey" data-k="0">0</button>'+
+          '<button class="pinkey ghost" data-k="back">⌫</button>'+
+        '</div>'+
+      '</div>';
+
+    var dotsEl = document.getElementById('pinDots');
+    function refreshDots(err){
+      var dots = dotsEl.querySelectorAll('.pindot');
+      dots.forEach(function(d,i){
+        d.className = 'pindot' + (i<entered.length ? (err?' err':' filled') : '');
+      });
+    }
+    function checkComplete(){
+      if(entered.length < APP_PIN.length) return;
+      if(entered === APP_PIN){
+        markPinOk();
+        boot();
+      } else {
+        refreshDots(true);
+        setTimeout(function(){ entered=''; refreshDots(false); }, 400);
+      }
+    }
+    document.getElementById('pinPad').addEventListener('click', function(e){
+      var btn = e.target.closest('[data-k]');
+      if(!btn) return;
+      var k = btn.getAttribute('data-k');
+      if(k==='back'){ entered = entered.slice(0,-1); refreshDots(false); return; }
+      if(entered.length >= APP_PIN.length) return;
+      entered += k;
+      refreshDots(false);
+      checkComplete();
+    });
+  }
+
   function boot(){
     appEl = document.getElementById('app');
     overlayEl = document.getElementById('overlay');
     sheetEl = document.getElementById('sheet');
     overlayEl.addEventListener('click', closeSheet);
+
+    if(!isPinOk()){ renderPinScreen(); return; }
 
     state.me = loadMe();
     appEl.className = '';
