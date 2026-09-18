@@ -59,6 +59,9 @@
   .section{padding:14px 16px 0;}
   .section-title{font-size:13px;font-weight:700;color:var(--muted);margin:0 0 8px;display:flex;align-items:center;gap:6px;}
 
+  .searchbox{padding:0 16px 10px;}
+  .searchbox input{width:100%;border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:999px;padding:9px 16px;font-family:inherit;font-size:13px;}
+
   .chiprow{display:flex;gap:8px;overflow-x:auto;padding:2px 16px 10px;scrollbar-width:none;}
   .chiprow::-webkit-scrollbar{display:none;}
   .chip{flex-shrink:0;border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:999px;padding:7px 14px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;}
@@ -122,7 +125,10 @@
   .seg button.sel-expense{background:var(--expense-bg);border-color:var(--expense);color:var(--expense);}
   .seg button.sel-personal{background:var(--personal-bg);border-color:var(--personal);color:var(--personal);}
   .seg button.sel-company{background:var(--company-bg);border-color:var(--company);color:var(--company);}
-  .field input, .field textarea{width:100%;border:1.5px solid var(--border);background:var(--surface-2);color:var(--text);border-radius:var(--radius-sm);padding:11px 12px;font-size:14px;font-family:inherit;}
+  .seg button.sel-transfer{background:var(--primary-bg);border-color:var(--primary);color:var(--primary-d);}
+  .seg3{display:flex;gap:6px;}
+  .seg3 button{flex:1;border:1.5px solid var(--border);background:var(--surface-2);color:var(--text);border-radius:var(--radius-sm);padding:10px 4px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit;}
+  .field input, .field textarea, .field select{width:100%;border:1.5px solid var(--border);background:var(--surface-2);color:var(--text);border-radius:var(--radius-sm);padding:11px 12px;font-size:14px;font-family:inherit;}
   .field textarea{resize:none;min-height:44px;}
   .sheetbtns{display:flex;gap:10px;margin-top:6px;}
   .btn{flex:1;border:none;border-radius:var(--radius-sm);padding:13px;font-size:14.5px;font-weight:800;cursor:pointer;font-family:inherit;}
@@ -133,19 +139,20 @@
 
   .banner{margin:0 16px 10px;background:var(--expense-bg);color:var(--expense);border-radius:var(--radius-sm);padding:9px 12px;font-size:12px;font-weight:700;display:none;text-align:center;}
   .banner.show{display:block;}
+  .errbanner{background:var(--expense-bg);color:var(--expense);border-radius:var(--radius-sm);padding:9px 12px;font-size:12.5px;font-weight:700;text-align:center;margin-bottom:12px;display:none;}
+  .errbanner.show{display:block;}
 
-  .pinscreen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:30px;text-align:center;}
-  .pinscreen .logo{width:64px;height:64px;border-radius:18px;background:linear-gradient(135deg,var(--primary-d),var(--primary));display:flex;align-items:center;justify-content:center;font-size:30px;margin-bottom:18px;}
-  .pinscreen h2{font-size:17px;font-weight:800;margin:0 0 4px;}
-  .pinscreen p{font-size:12.5px;color:var(--muted);margin:0 0 22px;}
-  .pindots{display:flex;gap:14px;margin-bottom:22px;}
-  .pindot{width:16px;height:16px;border-radius:50%;border:2px solid var(--border);background:transparent;transition:.15s;}
-  .pindot.filled{background:var(--primary);border-color:var(--primary);}
-  .pindot.err{background:var(--expense);border-color:var(--expense);}
-  .pinpad{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;width:100%;max-width:280px;}
-  .pinkey{aspect-ratio:1;border-radius:50%;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:20px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;}
-  .pinkey:active{background:var(--surface-2);}
-  .pinkey.ghost{border:none;background:transparent;box-shadow:none;}
+  .loginscreen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:30px;text-align:center;}
+  .loginscreen .logo{width:64px;height:64px;border-radius:18px;background:linear-gradient(135deg,var(--primary-d),var(--primary));display:flex;align-items:center;justify-content:center;font-size:30px;margin-bottom:18px;}
+  .loginscreen h2{font-size:17px;font-weight:800;margin:0 0 4px;}
+  .loginscreen p{font-size:12.5px;color:var(--muted);margin:0 0 20px;}
+  .loginform{width:100%;max-width:300px;text-align:right;}
+
+  .histitem{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:8px;font-size:12.5px;}
+  .histitem .ha{font-weight:700;margin-bottom:3px;}
+  .histitem .hd{color:var(--muted);font-size:11.5px;}
+  .receiptThumb{width:100%;max-height:160px;object-fit:contain;border-radius:var(--radius-sm);margin-top:8px;border:1px solid var(--border);}
+
   .loading{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:70vh;text-align:center;padding:30px;color:var(--muted);gap:10px;font-size:14px;}
   .spinner{width:26px;height:26px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin 0.8s linear infinite;}
   @keyframes spin{to{transform:rotate(360deg);}}
@@ -153,27 +160,32 @@
 </head>
 <body>
 <div id="shell">
-  <div id="app" class="loading"><div class="spinner"></div><div>...جارِ الاتصال</div></div>
+  <div id="app" class="loading"><div class="spinner"></div><div>...جارِ التحميل</div></div>
 </div>
 <div class="overlay" id="overlay"></div>
 <div class="sheet" id="sheet"></div>
+<div class="toast" id="toast" style="position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:10px 18px;border-radius:99px;font-size:13px;font-weight:700;z-index:60;opacity:0;pointer-events:none;transition:opacity .25s;box-shadow:var(--shadow-lg);"></div>
 <script>
 (function(){
   "use strict";
 
-  // ====== إعداد Firebase (Realtime Database عبر REST، بدون SDK) ======
+  // ====== إعداد Firebase ======
   var DB_URL = "https://hesapat-app-default-rtdb.firebaseio.com";
+  var FIREBASE_API_KEY = "AIzaSyDsjKuxk21dxF-A5Hko19ZabZugR8OFJSM";
+  var DATA_PATH = "tx_7q2m9k1z";
   var POLL_MS = 4000;
+  var RESERVED_KEYS = {'_meta':1,'_transfers':1,'_history':1,'_receipts':1,'_profiles':1};
 
-  var LS_ME = 'acc_me_v1';
-  var LS_CACHE = 'acc_cache_v1';
-  var LS_PINOK = 'acc_pinok_v1';
-  var APP_PIN = '2026';
+  var LS_AUTH = 'acc_auth_v2';
+  var LS_CACHE = 'acc_cache_v2';
 
   var state = {
-    me:null, tx:[], editingId:null, online:false, pollTimer:null,
-    filters:{range:'month', from:null, to:null, scope:'all', person:'all'}
+    auth:null, me:null, tx:[], transfers:[], profiles:[], adminId:null, editingId:null, online:false, pollTimer:null, closedUntil:null,
+    filters:{range:'month', from:null, to:null, scope:'all', person:'all', search:''}
   };
+  function isLocked(dateStr){ return !!(state.closedUntil && dateStr <= state.closedUntil); }
+  function findTransfer(id){ return state.transfers.find(function(t){return t.id===id;}); }
+  function isAdmin(){ return !!(state.me && state.adminId && state.me.id===state.adminId); }
 
   function esc(s){
     return String(s==null?"":s).replace(/[&<>"']/g, function(c){
@@ -197,35 +209,150 @@
     if(iso===y) return 'الأمس';
     return days[d.getDay()]+'، '+d.getDate()+' '+months[d.getMonth()];
   }
+  function fmtWhen(ts){
+    var d = new Date(ts);
+    return d.toLocaleDateString('ar')+' '+d.toLocaleTimeString('ar',{hour:'2-digit',minute:'2-digit'});
+  }
   function uid(){
     if(window.crypto && crypto.randomUUID) return crypto.randomUUID();
     return 'id-'+Date.now()+'-'+Math.random().toString(36).slice(2,10);
   }
+  function toast(msg){
+    var el = document.getElementById('toast');
+    el.textContent = msg; el.style.opacity='1';
+    setTimeout(function(){ el.style.opacity='0'; }, 2200);
+  }
 
-  // ---------- Firebase REST ----------
-  var DATA_PATH = 'tx_7q2m9k1z';
+  // ---------- مصادقة Firebase (Email/Password عبر REST) ----------
+  function loadAuth(){ try{ return JSON.parse(localStorage.getItem(LS_AUTH)||'null'); }catch(e){ return null; } }
+  function saveAuth(a){ try{ localStorage.setItem(LS_AUTH, JSON.stringify(a)); }catch(e){} }
+  function clearAuth(){ try{ localStorage.removeItem(LS_AUTH); }catch(e){} }
+
+  async function authSignIn(email, password){
+    var res = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key='+FIREBASE_API_KEY, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({email:email, password:password, returnSecureToken:true})
+    });
+    var data = await res.json();
+    if(!res.ok){ throw new Error((data.error&&data.error.message)||'auth_failed'); }
+    state.auth = {idToken:data.idToken, refreshToken:data.refreshToken, localId:data.localId, email:data.email, expiresAt: Date.now()+(parseInt(data.expiresIn,10)*1000)};
+    saveAuth(state.auth);
+    return state.auth;
+  }
+  async function authRefresh(){
+    if(!state.auth || !state.auth.refreshToken) throw new Error('no_refresh_token');
+    var res = await fetch('https://securetoken.googleapis.com/v1/token?key='+FIREBASE_API_KEY, {
+      method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'},
+      body: 'grant_type=refresh_token&refresh_token='+encodeURIComponent(state.auth.refreshToken)
+    });
+    var data = await res.json();
+    if(!res.ok){ throw new Error('refresh_failed'); }
+    state.auth = {idToken:data.id_token, refreshToken:data.refresh_token, localId:data.user_id, email: state.auth.email, expiresAt: Date.now()+(parseInt(data.expires_in,10)*1000)};
+    saveAuth(state.auth);
+    return state.auth;
+  }
+  async function ensureToken(){
+    if(!state.auth) throw new Error('not_authenticated');
+    if(Date.now() > state.auth.expiresAt - 60000){ await authRefresh(); }
+    return state.auth.idToken;
+  }
+  function logout(){ clearAuth(); state.auth=null; state.me=null; location.reload(); }
+
+  // ---------- Firebase REST (Realtime Database) ----------
+  function authedUrl(url){
+    var token = state.auth && state.auth.idToken;
+    if(!token) return url;
+    return url + (url.indexOf('?')>-1?'&':'?') + 'auth=' + encodeURIComponent(token);
+  }
+  async function dbFetch(path, options){
+    await ensureToken();
+    var res = await fetch(authedUrl(DB_URL+path), options||{});
+    if(res.status===401){
+      await authRefresh();
+      res = await fetch(authedUrl(DB_URL+path), options||{});
+    }
+    return res;
+  }
 
   async function fbGetAll(){
-    var res = await fetch(DB_URL+'/'+DATA_PATH+'.json', {cache:'no-store'});
+    var res = await dbFetch('/'+DATA_PATH+'.json', {cache:'no-store'});
     if(!res.ok) throw new Error('fetch_failed');
     var data = await res.json();
     var list = [];
-    if(data){ Object.keys(data).forEach(function(id){ var t = data[id]; t.id = id; list.push(t); }); }
+    if(data){ Object.keys(data).forEach(function(id){ if(RESERVED_KEYS[id]) return; var t = data[id]; t.id = id; list.push(t); }); }
     return list;
   }
+  async function fbGetMeta(){
+    var res = await dbFetch('/'+DATA_PATH+'/_meta.json', {cache:'no-store'});
+    if(!res.ok) throw new Error('fetch_failed');
+    return (await res.json()) || {};
+  }
+  async function fbPutMeta(data){
+    var res = await dbFetch('/'+DATA_PATH+'/_meta.json', {method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data)});
+    if(!res.ok) throw new Error('save_failed');
+  }
   async function fbPut(id, data){
-    var res = await fetch(DB_URL+'/'+DATA_PATH+'/'+id+'.json', {
-      method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data)
-    });
+    var res = await dbFetch('/'+DATA_PATH+'/'+id+'.json', {method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data)});
     if(!res.ok) throw new Error('save_failed');
   }
   async function fbDelete(id){
-    var res = await fetch(DB_URL+'/'+DATA_PATH+'/'+id+'.json', {method:'DELETE'});
+    var res = await dbFetch('/'+DATA_PATH+'/'+id+'.json', {method:'DELETE'});
+    if(!res.ok) throw new Error('delete_failed');
+  }
+  async function fbGetTransfers(){
+    var res = await dbFetch('/'+DATA_PATH+'/_transfers.json', {cache:'no-store'});
+    if(!res.ok) throw new Error('fetch_failed');
+    var data = await res.json(); var list = [];
+    if(data){ Object.keys(data).forEach(function(id){ var t = data[id]; t.id = id; list.push(t); }); }
+    return list;
+  }
+  async function fbPutTransfer(id, data){
+    var res = await dbFetch('/'+DATA_PATH+'/_transfers/'+id+'.json', {method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data)});
+    if(!res.ok) throw new Error('save_failed');
+  }
+  async function fbGetProfile(pid){
+    var res = await dbFetch('/'+DATA_PATH+'/_profiles/'+pid+'.json', {cache:'no-store'});
+    if(!res.ok) throw new Error('fetch_failed');
+    return await res.json();
+  }
+  async function fbPutProfile(pid, data){
+    var res = await dbFetch('/'+DATA_PATH+'/_profiles/'+pid+'.json', {method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data)});
+    if(!res.ok) throw new Error('save_failed');
+  }
+  async function fbGetAllProfiles(){
+    var res = await dbFetch('/'+DATA_PATH+'/_profiles.json', {cache:'no-store'});
+    if(!res.ok) throw new Error('fetch_failed');
+    var data = await res.json(); var list = [];
+    if(data){ Object.keys(data).forEach(function(id){ var p = data[id]; list.push({id:id, name:p.name, role:p.role||'', accountType:p.accountType||'both'}); }); }
+    return list;
+  }
+  async function fbAddHistory(entry){
+    var id = uid();
+    var res = await dbFetch('/'+DATA_PATH+'/_history/'+id+'.json', {method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(entry)});
+    if(!res.ok) throw new Error('save_failed');
+  }
+  async function fbGetHistory(){
+    var res = await dbFetch('/'+DATA_PATH+'/_history.json', {cache:'no-store'});
+    if(!res.ok) throw new Error('fetch_failed');
+    var data = await res.json(); var list = [];
+    if(data){ Object.keys(data).forEach(function(id){ var t = data[id]; t.id = id; list.push(t); }); }
+    list.sort(function(a,b){ return (b.at||0)-(a.at||0); });
+    return list;
+  }
+  async function fbPutReceipt(txId, data){
+    var res = await dbFetch('/'+DATA_PATH+'/_receipts/'+txId+'.json', {method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data)});
+    if(!res.ok) throw new Error('save_failed');
+  }
+  async function fbGetReceipt(txId){
+    var res = await dbFetch('/'+DATA_PATH+'/_receipts/'+txId+'.json', {cache:'no-store'});
+    if(!res.ok) throw new Error('fetch_failed');
+    return await res.json();
+  }
+  async function fbDeleteReceipt(txId){
+    var res = await dbFetch('/'+DATA_PATH+'/_receipts/'+txId+'.json', {method:'DELETE'});
     if(!res.ok) throw new Error('delete_failed');
   }
 
-  function loadMe(){ try{ return JSON.parse(localStorage.getItem(LS_ME)||'null'); }catch(e){ return null; } }
-  function saveMe(me){ localStorage.setItem(LS_ME, JSON.stringify(me)); }
   function loadCache(){ try{ return JSON.parse(localStorage.getItem(LS_CACHE)||'[]'); }catch(e){ return []; } }
   function saveCache(list){ try{ localStorage.setItem(LS_CACHE, JSON.stringify(list)); }catch(e){} }
 
@@ -245,15 +372,21 @@
   }
   function distinctPeople(list){
     var ids = [], seen = {};
-    list.forEach(function(t){ if(!seen[t.ownerId]){ seen[t.ownerId]=true; ids.push({id:t.ownerId, name:t.ownerName}); } });
+    list.forEach(function(t){ if(!seen[t.ownerId]){ seen[t.ownerId]=true; ids.push({id:t.ownerId, name:t.ownerName, role:t.ownerRole||''}); } });
     return ids;
+  }
+  function personLabel(id, name, role){
+    var base = id===state.me.id ? 'أنا' : (name || 'مستخدم آخر');
+    return role ? (base+' · '+role) : base;
   }
   function computeFiltered(){
     var range = getRangeDates(); var f = state.filters;
+    var term = (f.search||'').trim().toLowerCase();
     return state.tx.filter(function(t){
       if(!passesRange(t.date, range)) return false;
       if(f.scope!=='all' && t.scope!==f.scope) return false;
       if(f.person!=='all' && t.ownerId!==f.person) return false;
+      if(term && (t.note||'').toLowerCase().indexOf(term)===-1) return false;
       return true;
     }).sort(function(a,b){
       if(a.date!==b.date) return a.date<b.date?1:-1;
@@ -263,6 +396,7 @@
   function computeTotals(list){
     var res = {personal:{income:0,expense:0}, company:{income:0,expense:0}};
     list.forEach(function(t){
+      if(t.type!=='income' && t.type!=='expense') return;
       var s = res[t.scope]; if(!s){ s = res[t.scope] = {income:0,expense:0}; }
       s[t.type] += (t.amount||0);
     });
@@ -294,7 +428,7 @@
     scopes.forEach(function(s){ html += '<button class="chip small" data-scope="'+s[0]+'" style="'+(f.scope===s[0]?'background:var(--primary);border-color:var(--primary);color:#fff':'')+'">'+s[1]+'</button>'; });
     html += '</div>';
     var people = distinctPeople(state.tx);
-    if(people.length>1){
+    if(isAdmin() && people.length>1){
       html += '<div class="chiprow" id="personChips">';
       html += '<button class="chip small'+(f.person==='all'?' active':'')+'" data-person="all">الكل</button>';
       people.forEach(function(p){
@@ -330,6 +464,7 @@
   function renderCompareHtml(){
     var range = getRangeDates(); var f = state.filters;
     var scoped = state.tx.filter(function(t){
+      if(t.type!=='income' && t.type!=='expense') return false;
       if(!passesRange(t.date, range)) return false;
       if(f.scope!=='all' && t.scope!==f.scope) return false;
       return true;
@@ -337,13 +472,12 @@
     var people = distinctPeople(scoped);
     if(people.length < 2) return '';
     var groups = {};
-    people.forEach(function(p){ groups[p.id] = {income:0, expense:0, name:p.name}; });
+    people.forEach(function(p){ groups[p.id] = {income:0, expense:0, name:p.name, role:p.role}; });
     scoped.forEach(function(t){ groups[t.ownerId][t.type] += (t.amount||0); });
     var html = '<div class="section-title">📊 مقارنة الحركات</div><div class="comparewrap">';
     people.forEach(function(p){
       var g = groups[p.id]; var net = g.income - g.expense;
-      var isMe = p.id===state.me.id;
-      var label = isMe ? 'أنا' : (p.name || 'مستخدم آخر');
+      var label = personLabel(p.id, p.name, p.role);
       html += '<div class="pcard">'+
         '<div class="phead"><div class="av">'+esc(initials(label))+'</div><b>'+esc(label)+'</b></div>'+
         '<div class="prow"><span>قبض</span><span style="color:var(--income);font-weight:700">'+fmtMoney(g.income)+'</span></div>'+
@@ -355,8 +489,73 @@
     return html;
   }
 
+  function transferLegLabel(t, otherName){ return t==='expense' ? ('تحويل إلى '+otherName) : ('تحويل من '+otherName); }
+
+  function renderTransferBalanceHtml(){
+    var range = getRangeDates();
+    var accepted = state.transfers.filter(function(t){ return t.status==='accepted' && passesRange(t.date, range); });
+    if(accepted.length===0) return '';
+    var net = {}; var names = {}; var roles = {};
+    accepted.forEach(function(t){
+      names[t.fromId]=t.fromName; names[t.toId]=t.toName;
+      roles[t.fromId]=t.fromRole||roles[t.fromId]; roles[t.toId]=t.toRole||roles[t.toId];
+      net[t.fromId] = (net[t.fromId]||0) - t.amount;
+      net[t.toId] = (net[t.toId]||0) + t.amount;
+    });
+    var html = '<div class="section-title">↔ رصيد التحويلات بينكم</div><div class="comparewrap">';
+    Object.keys(net).forEach(function(id){
+      var label = personLabel(id, names[id], roles[id]);
+      var v = net[id];
+      var desc = v>0 ? 'استلم أكتر مما أعطى' : (v<0 ? 'أعطى أكتر مما استلم' : 'متعادل');
+      html += '<div class="pcard">'+
+        '<div class="phead"><div class="av">'+esc(initials(label))+'</div><b>'+esc(label)+'</b></div>'+
+        '<div class="pnet" style="color:'+(v<0?'var(--expense)':(v>0?'var(--income)':'var(--muted)'))+'">'+fmtMoney(v)+'</div>'+
+        '<div class="prow"><span>'+desc+'</span></div>'+
+      '</div>';
+    });
+    html += '</div>';
+    return html;
+  }
+
+  var pendingScopeChoice = {};
+  function renderPendingTransfersHtml(){
+    var pending = state.transfers.filter(function(t){ return t.status==='pending'; });
+    if(pending.length===0) return '';
+    var waitingForMe = pending.filter(function(t){ return t.initiatorId!==state.me.id && (t.fromId===state.me.id || t.toId===state.me.id); });
+    var waitingForOther = pending.filter(function(t){ return t.initiatorId===state.me.id; });
+    if(waitingForMe.length===0 && waitingForOther.length===0) return '';
+    var html = '<div class="section-title">🔔 تحويلات بانتظار الرد</div>';
+    waitingForMe.forEach(function(t){
+      var iAmReceiver = t.toId===state.me.id;
+      var otherLabel = personLabel(t.initiatorId, t.initiatorName, iAmReceiver? t.fromRole : t.toRole);
+      var verb = iAmReceiver ? 'رح تستلم' : 'رح تعطي';
+      var chosen = pendingScopeChoice[t.id] || 'personal';
+      html += '<div class="card" style="margin-bottom:10px;">'+
+        '<div class="ctitle">'+esc(otherLabel)+' — '+verb+' '+fmtMoney(t.amount)+'</div>'+
+        (t.note? '<div class="row" style="margin-bottom:6px;"><span>'+esc(t.note)+'</span></div>' : '')+
+        '<div class="field" style="margin-bottom:8px;"><label>حدّد أي حساب يتأثر عندك</label><div class="seg">'+
+          '<button data-pending-scope="'+t.id+'" data-scope-val="personal" class="'+(chosen==='personal'?'sel-personal':'')+'">شخصي</button>'+
+          '<button data-pending-scope="'+t.id+'" data-scope-val="company" class="'+(chosen==='company'?'sel-company':'')+'">الشركة</button>'+
+        '</div></div>'+
+        '<div class="sheetbtns" style="margin-top:0;">'+
+          '<button class="btn btn-danger" data-reject="'+t.id+'">رفض</button>'+
+          '<button class="btn btn-primary" data-accept="'+t.id+'">قبول</button>'+
+        '</div>'+
+      '</div>';
+    });
+    waitingForOther.forEach(function(t){
+      var counterpartyId = t.initiatorId===t.fromId ? t.toId : t.fromId;
+      var otherLabel = personLabel(counterpartyId, t.initiatorId===t.fromId?t.toName:t.fromName, t.initiatorId===t.fromId?t.toRole:t.fromRole);
+      html += '<div class="card" style="margin-bottom:10px;">'+
+        '<div class="ctitle">بانتظار موافقة '+esc(otherLabel)+' — '+fmtMoney(t.amount)+'</div>'+
+        '<div class="sheetbtns" style="margin-top:0;"><button class="btn btn-ghost" data-cancel-transfer="'+t.id+'" style="width:100%;">إلغاء التحويل</button></div>'+
+      '</div>';
+    });
+    return html;
+  }
+
   function renderListHtml(list){
-    if(list.length===0) return '<div class="empty">لا توجد حركات في هذه الفترة 🗒️</div>';
+    if(list.length===0) return '<div class="empty">لا توجد حركات مطابقة 🗒️</div>';
     var showWho = distinctPeople(state.tx).length>1 && state.filters.person==='all';
     var groups = {}; var order = [];
     list.forEach(function(t){ if(!groups[t.date]){ groups[t.date]=[]; order.push(t.date); } groups[t.date].push(t); });
@@ -365,11 +564,13 @@
       html += '<div class="daylabel">'+fmtDateLabel(date)+'</div>';
       groups[date].forEach(function(t){
         var isIncome = t.type==='income';
-        var canEdit = t.ownerId===state.me.id;
+        var locked = isLocked(t.date);
+        var pendingLeg = t.transferId && findTransfer(t.transferId) && findTransfer(t.transferId).status==='pending';
+        var canEdit = t.ownerId===state.me.id && !locked && !pendingLeg;
         var who = '';
         if(showWho){
-          var label = t.ownerId===state.me.id ? 'أنا' : esc(t.ownerName||'مستخدم آخر');
-          who = '<span>'+label+'</span>';
+          var label = personLabel(t.ownerId, t.ownerName, t.ownerRole);
+          who = '<span>'+esc(label)+'</span>';
         }
         html += '<div class="txitem">'+
           '<div class="txicon" style="background:'+(isIncome?'var(--income-bg)':'var(--expense-bg)')+';color:'+(isIncome?'var(--income)':'var(--expense)')+'">'+(isIncome?'↑':'↓')+'</div>'+
@@ -377,6 +578,8 @@
             '<div class="txtitle">'+(t.note? esc(t.note) : (isIncome?'قبض':'صرف'))+'</div>'+
             '<div class="txmeta">'+
               '<span class="badge" style="background:var('+scopeBgVar(t.scope)+');color:var('+scopeColorVar(t.scope)+')">'+scopeLabel(t.scope)+'</span>'+
+              (t.transferId? '<span class="badge" style="background:var(--primary-bg);color:var(--primary-d)">↔ تحويل</span>' : '')+
+              (t.hasReceipt? '<span class="miniicon" data-view-receipt="'+t.id+'" style="width:20px;height:20px;font-size:10px;">📎</span>' : '')+
               who+
             '</div>'+
           '</div>'+
@@ -384,7 +587,7 @@
           (canEdit ? '<div class="txactions">'+
             '<div class="miniicon" data-edit="'+t.id+'">✎</div>'+
             '<div class="miniicon" data-del="'+t.id+'">✕</div>'+
-          '</div>' : '')+
+          '</div>' : ((locked||pendingLeg) ? '<div class="txactions"><div class="miniicon" title="'+(pendingLeg?'بانتظار رد الطرف الآخر':'مرحّلة')+'">'+(pendingLeg?'⏳':'🔒')+'</div></div>' : ''))+
         '</div>';
       });
     });
@@ -396,16 +599,23 @@
     var totals = computeTotals(filtered);
     var html = '';
     html += '<div class="banner'+(state.online?'':' show')+'" id="offlineBanner">⚠️ غير متصل حالياً — بتشوف آخر نسخة محفوظة على جهازك</div>';
-    html += '<div class="section" style="padding-top:10px;">'+renderFilters()+'</div>';
+    var pendingHtml = renderPendingTransfersHtml();
+    if(pendingHtml) html += '<div class="section">'+pendingHtml+'</div>';
+    html += '<div class="searchbox"><input type="text" id="searchInput" placeholder="🔍 بحث بالملاحظات..." value="'+esc(state.filters.search)+'"></div>';
+    html += '<div class="section" style="padding-top:0;">'+renderFilters()+'</div>';
     html += '<div class="section">'+renderSummary(totals)+'</div>';
-    var compareHtml = renderCompareHtml();
+    var compareHtml = isAdmin() ? renderCompareHtml() : '';
     if(compareHtml) html += '<div class="section">'+compareHtml+'</div>';
+    var transferHtml = renderTransferBalanceHtml();
+    if(transferHtml) html += '<div class="section">'+transferHtml+'</div>';
     var listHtml = renderListHtml(filtered);
     html += '<div class="section" style="padding-bottom:20px;"><div class="section-title">📋 الحركات</div>'+listHtml+'</div>';
     appEl.innerHTML = html;
     attachEvents();
     var dot = document.getElementById('statusDot');
     if(dot){ dot.className = 'dotstatus '+(state.online?'on':'off'); }
+    var si = document.getElementById('searchInput');
+    if(si) setTimeout(function(){ si.focus(); si.setSelectionRange(si.value.length, si.value.length); }, 0);
   }
 
   function attachEvents(){
@@ -415,61 +625,141 @@
     var fromI = appEl.querySelector('#fromDate'); var toI = appEl.querySelector('#toDate');
     if(fromI) fromI.addEventListener('change', function(){ state.filters.from = fromI.value||null; renderAll(); });
     if(toI) toI.addEventListener('change', function(){ state.filters.to = toI.value||null; renderAll(); });
+    var searchI = appEl.querySelector('#searchInput');
+    if(searchI) searchI.addEventListener('input', function(e){ state.filters.search = e.target.value; renderAll(); });
     appEl.querySelectorAll('[data-edit]').forEach(function(el){ el.addEventListener('click', function(){ openSheet(el.getAttribute('data-edit')); }); });
     appEl.querySelectorAll('[data-del]').forEach(function(el){ el.addEventListener('click', function(){ deleteTx(el.getAttribute('data-del')); }); });
+    appEl.querySelectorAll('[data-pending-scope]').forEach(function(el){ el.addEventListener('click', function(){ pendingScopeChoice[el.getAttribute('data-pending-scope')] = el.getAttribute('data-scope-val'); renderAll(); }); });
+    appEl.querySelectorAll('[data-accept]').forEach(function(el){ el.addEventListener('click', function(){ acceptTransfer(el.getAttribute('data-accept')); }); });
+    appEl.querySelectorAll('[data-reject]').forEach(function(el){ el.addEventListener('click', function(){ rejectTransfer(el.getAttribute('data-reject')); }); });
+    appEl.querySelectorAll('[data-cancel-transfer]').forEach(function(el){ el.addEventListener('click', function(){ rejectTransfer(el.getAttribute('data-cancel-transfer')); }); });
+    appEl.querySelectorAll('[data-view-receipt]').forEach(function(el){ el.addEventListener('click', function(e){ e.stopPropagation(); viewReceipt(el.getAttribute('data-view-receipt')); }); });
   }
 
   // ---------- ورقة إضافة/تعديل ----------
-  var sheetState = {type:'expense', scope:'personal', amount:'', date:'', note:''};
+  var sheetState = {type:'expense', scope:'personal', amount:'', date:'', note:'', direction:'give', otherId:'', otherName:'', receiptDataUrl:null, hadReceipt:false};
 
   function openSheet(id){
     state.editingId = id||null;
     if(id){
       var tx = state.tx.find(function(t){return t.id===id;});
       if(!tx) return;
-      sheetState = {type:tx.type, scope:tx.scope, amount:String(tx.amount), date:tx.date, note:tx.note||''};
+      if(isLocked(tx.date)){ alert('هاي الحركة مرحّلة (مقفولة) وما بتنعدّل.'); return; }
+      if(tx.transferId && findTransfer(tx.transferId) && findTransfer(tx.transferId).status==='pending'){ alert('هاي الحركة جزء من تحويل بانتظار رد الطرف الآخر، ما بتنعدّل لحد ما يتم الرد.'); return; }
+      sheetState = {type:tx.type, scope:tx.scope, amount:String(tx.amount), date:tx.date, note:tx.note||'', direction:'give', otherId:'', otherName:'', receiptDataUrl:null, hadReceipt:!!tx.hasReceipt};
     } else {
-      sheetState = {type:'expense', scope:'personal', amount:'', date:todayISO(), note:''};
+      var known = state.profiles.filter(function(p){return p.id!==state.me.id;});
+      var defScope = (state.me.accountType==='company') ? 'company' : 'personal';
+      sheetState = {type:'expense', scope:defScope, amount:'', date:todayISO(), note:'', direction:'give',
+        otherId: known[0]?known[0].id:'', otherName: known[0]?known[0].name:'', receiptDataUrl:null, hadReceipt:false};
     }
     renderAddSheet();
     overlayEl.classList.add('open'); sheetEl.classList.add('open');
   }
   function closeSheet(){ overlayEl.classList.remove('open'); sheetEl.classList.remove('open'); state.editingId = null; }
 
+  function resizeImageFile(file, cb){
+    var reader = new FileReader();
+    reader.onload = function(e){
+      var img = new Image();
+      img.onload = function(){
+        var maxW = 900;
+        var scale = Math.min(1, maxW/img.width);
+        var w = Math.round(img.width*scale), h = Math.round(img.height*scale);
+        var canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        cb(canvas.toDataURL('image/jpeg', 0.7));
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function scopeFieldHtml(currentScope, labelText){
+    var acct = state.me.accountType || 'both';
+    if(acct==='both'){
+      return '<div class="field"><label>'+labelText+'</label><div class="seg">'+
+        '<button data-set-scope="personal" class="'+(currentScope==='personal'?'sel-personal':'')+'">شخصي</button>'+
+        '<button data-set-scope="company" class="'+(currentScope==='company'?'sel-company':'')+'">الشركة</button>'+
+      '</div></div>';
+    }
+    return '<div class="field"><label>'+labelText+'</label><div class="sheetsub" style="margin:0;">'+(acct==='company'?'الشركة':'شخصي')+' (حسابك مسجّل بهاي الفئة فقط)</div></div>';
+  }
+
   function renderAddSheet(){
     var s = sheetState;
+    var acct = state.me.accountType || 'both';
+    if(acct!=='both') s.scope = acct;
+    var known = state.profiles.filter(function(p){return p.id!==state.me.id;});
     var html = '<div class="sheethandle"></div>'+
       '<div class="sheettitle">'+(state.editingId?'تعديل حركة':'إضافة حركة جديدة')+'</div>'+
-      '<div class="field"><label>نوع الحركة</label><div class="seg">'+
+      '<div class="field"><label>نوع الحركة</label><div class="seg3">'+
         '<button data-set-type="income" class="'+(s.type==='income'?'sel-income':'')+'">↑ قبض</button>'+
         '<button data-set-type="expense" class="'+(s.type==='expense'?'sel-expense':'')+'">↓ صرف</button>'+
-      '</div></div>'+
-      '<div class="field"><label>الفئة</label><div class="seg">'+
-        '<button data-set-scope="personal" class="'+(s.scope==='personal'?'sel-personal':'')+'">شخصي</button>'+
-        '<button data-set-scope="company" class="'+(s.scope==='company'?'sel-company':'')+'">الشركة</button>'+
-      '</div></div>'+
-      '<div class="field"><label>المبلغ (₪)</label><input type="number" inputmode="decimal" step="0.01" min="0" id="fAmount" value="'+esc(s.amount)+'" placeholder="0.00"></div>'+
+        '<button data-set-type="transfer" class="'+(s.type==='transfer'?'sel-transfer':'')+'">↔ تحويل</button>'+
+      '</div></div>';
+
+    if(s.type==='transfer'){
+      html += '<div class="field"><label>الاتجاه</label><div class="seg">'+
+          '<button data-set-dir="give" class="'+(s.direction==='give'?'sel-expense':'')+'">أعطيت أنا</button>'+
+          '<button data-set-dir="receive" class="'+(s.direction==='receive'?'sel-income':'')+'">استلمت أنا</button>'+
+        '</div></div>'+
+        scopeFieldHtml(s.scope, 'من أي حساب عندك '+(s.direction==='give'?'رح يطلع':'رح يدخل'))+
+        '<div class="field"><label>الطرف الآخر</label>'+
+          (known.length>0 ?
+            '<select id="fOther">'+
+              known.map(function(p){ return '<option value="'+esc(p.id)+'" data-name="'+esc(p.name)+'" data-role="'+esc(p.role)+'"'+(s.otherId===p.id?' selected':'')+'>'+esc(personLabel(p.id,p.name,p.role))+'</option>'; }).join('')+
+            '</select>' :
+            '<div class="sheetsub" style="margin:0;">ما في مستخدمين مسجّلين آخرين على التطبيق بعد — لازم الطرف التاني يعمل حساب دخول أول.</div>')+
+        '</div>'+
+        (known.length>0 ? '<div class="sheetsub" style="margin:-6px 0 14px;">التحويل رح يوصل للطرف الآخر بحالة "بانتظار الرد" — رح يتأكد ويحدد هو من أي حساب عنده قبل ما ينحسب نهائياً.</div>' : '');
+    } else {
+      html += scopeFieldHtml(s.scope, 'الفئة');
+    }
+
+    html += '<div class="field"><label>المبلغ (₪)</label><input type="number" inputmode="decimal" step="0.01" min="0" id="fAmount" value="'+esc(s.amount)+'" placeholder="0.00"></div>'+
       '<div class="field"><label>التاريخ</label><input type="date" id="fDate" value="'+esc(s.date)+'"></div>'+
       '<div class="field"><label>ملاحظة (اختياري)</label><textarea id="fNote" placeholder="مثال: فاتورة كهرباء، دفعة نزيل...">'+esc(s.note)+'</textarea></div>'+
+      (s.type!=='transfer' ? (
+        '<div class="field"><label>📎 صورة الفاتورة (اختياري)</label><input type="file" accept="image/*" id="fReceipt">'+
+        (s.hadReceipt && !s.receiptDataUrl ? '<div class="sheetsub" style="margin:6px 0 0;">📎 مرفق فاتورة حالياً — اختر صورة جديدة لاستبدالها</div>' : '')+
+        (s.receiptDataUrl ? '<img class="receiptThumb" src="'+s.receiptDataUrl+'">' : '')+
+        '</div>'
+      ) : '')+
       '<div class="sheetbtns">'+
         (state.editingId ? '<button class="btn btn-danger" id="btnDelete">حذف</button>' : '')+
         '<button class="btn btn-ghost" id="btnCancel">إلغاء</button>'+
-        '<button class="btn btn-primary" id="btnSave">حفظ</button>'+
+        '<button class="btn btn-primary" id="btnSave"'+(s.type==='transfer' && known.length===0 ? ' disabled' : '')+'>حفظ</button>'+
       '</div>';
     sheetEl.innerHTML = html;
     sheetEl.querySelectorAll('[data-set-type]').forEach(function(el){ el.addEventListener('click', function(){ sheetState.type = el.getAttribute('data-set-type'); renderAddSheet(); }); });
     sheetEl.querySelectorAll('[data-set-scope]').forEach(function(el){ el.addEventListener('click', function(){ sheetState.scope = el.getAttribute('data-set-scope'); renderAddSheet(); }); });
+    sheetEl.querySelectorAll('[data-set-dir]').forEach(function(el){ el.addEventListener('click', function(){ sheetState.direction = el.getAttribute('data-set-dir'); renderAddSheet(); }); });
+    var otherSel = sheetEl.querySelector('#fOther');
+    if(otherSel) otherSel.addEventListener('change', function(){
+      sheetState.otherId = otherSel.value;
+      sheetState.otherName = otherSel.options[otherSel.selectedIndex].getAttribute('data-name');
+      renderAddSheet();
+    });
     sheetEl.querySelector('#fAmount').addEventListener('input', function(e){ sheetState.amount = e.target.value; });
     sheetEl.querySelector('#fDate').addEventListener('input', function(e){ sheetState.date = e.target.value; });
     sheetEl.querySelector('#fNote').addEventListener('input', function(e){ sheetState.note = e.target.value; });
+    var receiptI = sheetEl.querySelector('#fReceipt');
+    if(receiptI) receiptI.addEventListener('change', function(e){
+      var file = e.target.files[0]; if(!file) return;
+      resizeImageFile(file, function(dataUrl){ sheetState.receiptDataUrl = dataUrl; renderAddSheet(); });
+    });
     sheetEl.querySelector('#btnCancel').addEventListener('click', closeSheet);
-    sheetEl.querySelector('#btnSave').addEventListener('click', saveTxFromSheet);
+    var saveBtn = sheetEl.querySelector('#btnSave');
+    if(saveBtn && !saveBtn.disabled) saveBtn.addEventListener('click', saveTxFromSheet);
     var delBtn = sheetEl.querySelector('#btnDelete');
     if(delBtn) delBtn.addEventListener('click', function(){ var id=state.editingId; closeSheet(); deleteTx(id); });
   }
 
   async function saveTxFromSheet(){
     var s = sheetState;
+    if(s.type==='transfer'){ createTransfer(); return; }
     var amount = parseFloat(String(s.amount).replace(',', '.'));
     if(!amount || amount<=0){ alert('الرجاء إدخال مبلغ صحيح أكبر من صفر'); return; }
     if(!s.date){ alert('الرجاء تحديد التاريخ'); return; }
@@ -477,16 +767,19 @@
     btn.disabled = true; btn.textContent = 'جارِ الحفظ...';
 
     var id = state.editingId || uid();
+    var isNew = !state.editingId;
+    var beforeSnapshot = null;
     var data;
     if(state.editingId){
       var existing = state.tx.find(function(t){return t.id===id;}) || {};
+      beforeSnapshot = {type:existing.type, scope:existing.scope, amount:existing.amount, date:existing.date, note:existing.note||''};
       data = Object.assign({}, existing, {type:s.type, scope:s.scope, amount:amount, date:s.date, note:(s.note||'').trim()});
     } else {
-      data = {type:s.type, scope:s.scope, amount:amount, date:s.date, note:(s.note||'').trim(), ownerId:state.me.id, ownerName:state.me.name, createdAt: Date.now()};
+      data = {type:s.type, scope:s.scope, amount:amount, date:s.date, note:(s.note||'').trim(), ownerId:state.me.id, ownerName:state.me.name, ownerRole:state.me.role||'', createdAt: Date.now()};
     }
+    if(s.receiptDataUrl){ data.hasReceipt = true; }
     delete data.id;
 
-    // تحديث محلي فوري (تفاؤلي)
     var idx = state.tx.findIndex(function(t){return t.id===id;});
     var localCopy = Object.assign({id:id}, data);
     if(idx>-1) state.tx[idx] = localCopy; else state.tx.push(localCopy);
@@ -496,6 +789,11 @@
 
     try{
       await fbPut(id, data);
+      if(s.receiptDataUrl){ await fbPutReceipt(id, {data:s.receiptDataUrl, mime:'image/jpeg', uploadedAt:Date.now()}); }
+      await fbAddHistory({
+        action: isNew?'create':'edit', txId:id, byId:state.me.id, byName:state.me.name, byRole:state.me.role||'', at:Date.now(),
+        before: beforeSnapshot, after: {type:data.type, scope:data.scope, amount:data.amount, date:data.date, note:data.note}
+      });
       state.online = true;
       refreshFromServer();
     }catch(e){
@@ -505,29 +803,314 @@
     }
   }
 
+  async function createTransfer(){
+    var s = sheetState;
+    var amount = parseFloat(String(s.amount).replace(',', '.'));
+    if(!amount || amount<=0){ alert('الرجاء إدخال مبلغ صحيح أكبر من صفر'); return; }
+    if(!s.date){ alert('الرجاء تحديد التاريخ'); return; }
+    if(!s.otherId){ alert('الرجاء اختيار الطرف الآخر'); return; }
+    var btn = sheetEl.querySelector('#btnSave');
+    btn.disabled = true; btn.textContent = 'جارِ الإرسال...';
+
+    var otherId = s.otherId;
+    var otherName = s.otherName;
+    var knownOther = state.profiles.find(function(p){return p.id===otherId;});
+    var otherRole = knownOther ? knownOther.role : '';
+    var fromId, fromName, fromRole, toId, toName, toRole;
+    if(s.direction==='give'){ fromId=state.me.id; fromName=state.me.name; fromRole=state.me.role||''; toId=otherId; toName=otherName; toRole=otherRole; }
+    else { fromId=otherId; fromName=otherName; fromRole=otherRole; toId=state.me.id; toName=state.me.name; toRole=state.me.role||''; }
+
+    var transferId = uid();
+    var linkedTxId = uid();
+    var initiatorType = (fromId===state.me.id) ? 'expense' : 'income';
+    var noteTrim = (s.note||'').trim();
+    var linkedTx = {
+      type: initiatorType, scope: s.scope, amount: amount, date: s.date,
+      note: noteTrim || transferLegLabel(initiatorType, otherName),
+      ownerId: state.me.id, ownerName: state.me.name, ownerRole: state.me.role||'',
+      transferId: transferId, createdAt: Date.now()
+    };
+    var transferData = {
+      status: 'pending', amount: amount, date: s.date, note: noteTrim,
+      fromId: fromId, fromName: fromName, fromRole: fromRole,
+      toId: toId, toName: toName, toRole: toRole,
+      initiatorId: state.me.id, initiatorName: state.me.name,
+      initiatorScope: s.scope, initiatorLinkedTxId: linkedTxId,
+      counterpartyScope: null, counterpartyLinkedTxId: null,
+      createdAt: Date.now()
+    };
+
+    state.tx.push(Object.assign({id:linkedTxId}, linkedTx));
+    state.transfers.push(Object.assign({id:transferId}, transferData));
+    saveCache(state.tx);
+    closeSheet();
+    renderAll();
+
+    try{
+      await fbPut(linkedTxId, linkedTx);
+      await fbPutTransfer(transferId, transferData);
+      state.online = true;
+      refreshFromServer();
+    }catch(e){
+      state.online = false;
+      renderAll();
+      alert('تعذّر إرسال التحويل — تأكد من الاتصال بالإنترنت وحاول ثانيةً.');
+    }
+  }
+
+  async function acceptTransfer(transferId){
+    var t = findTransfer(transferId);
+    if(!t) return;
+    var chosenScope = pendingScopeChoice[transferId] || 'personal';
+    var counterpartyType = (t.fromId===state.me.id) ? 'expense' : 'income';
+    var linkedTxId = uid();
+    var otherName = counterpartyType==='expense' ? t.toName : t.fromName;
+    var linkedTx = {
+      type: counterpartyType, scope: chosenScope, amount: t.amount, date: t.date,
+      note: (t.note||'').trim() || transferLegLabel(counterpartyType, otherName),
+      ownerId: state.me.id, ownerName: state.me.name, ownerRole: state.me.role||'',
+      transferId: transferId, createdAt: Date.now()
+    };
+    var updatedTransfer = Object.assign({}, t, {status:'accepted', counterpartyScope:chosenScope, counterpartyLinkedTxId:linkedTxId});
+    delete updatedTransfer.id;
+
+    state.tx.push(Object.assign({id:linkedTxId}, linkedTx));
+    var tidx = state.transfers.findIndex(function(x){return x.id===transferId;});
+    if(tidx>-1) state.transfers[tidx] = Object.assign({id:transferId}, updatedTransfer);
+    saveCache(state.tx);
+    renderAll();
+
+    try{
+      await fbPut(linkedTxId, linkedTx);
+      await fbPutTransfer(transferId, updatedTransfer);
+      await fbAddHistory({action:'accept_transfer', txId:linkedTxId, byId:state.me.id, byName:state.me.name, byRole:state.me.role||'', at:Date.now(), before:null, after:{amount:t.amount, scope:chosenScope}});
+      state.online = true;
+      refreshFromServer();
+    }catch(e){
+      state.online = false;
+      alert('تعذّر قبول التحويل — تأكد من الاتصال بالإنترنت وحاول ثانيةً');
+      refreshFromServer();
+    }
+  }
+
+  async function rejectTransfer(transferId){
+    var t = findTransfer(transferId);
+    if(!t) return;
+    if(!confirm('متأكد؟ رح يتم إلغاء التحويل وإلغاء الحركة المرتبطة به.')) return;
+    var updatedTransfer = Object.assign({}, t, {status:'rejected'});
+    delete updatedTransfer.id;
+
+    state.tx = state.tx.filter(function(x){ return x.id!==t.initiatorLinkedTxId; });
+    var tidx = state.transfers.findIndex(function(x){return x.id===transferId;});
+    if(tidx>-1) state.transfers[tidx] = Object.assign({id:transferId}, updatedTransfer);
+    saveCache(state.tx);
+    renderAll();
+
+    try{
+      if(t.initiatorLinkedTxId) await fbDelete(t.initiatorLinkedTxId);
+      await fbPutTransfer(transferId, updatedTransfer);
+      state.online = true;
+      refreshFromServer();
+    }catch(e){
+      state.online = false;
+      alert('تعذّر إلغاء التحويل — تأكد من الاتصال بالإنترنت وحاول ثانيةً');
+      refreshFromServer();
+    }
+  }
+
   async function deleteTx(id){
+    var txToDel = state.tx.find(function(t){return t.id===id;});
+    if(txToDel && isLocked(txToDel.date)){ alert('هاي الحركة مرحّلة (مقفولة) وما بتنحذف.'); return; }
+    if(txToDel && txToDel.transferId){
+      var rel = findTransfer(txToDel.transferId);
+      if(rel && rel.status==='pending'){ alert('هاي الحركة جزء من تحويل بانتظار الرد — استخدم زر "إلغاء التحويل" بدل الحذف المباشر.'); return; }
+    }
     if(!confirm('هل تريد حذف هذه الحركة؟')) return;
     state.tx = state.tx.filter(function(t){ return t.id!==id; });
     saveCache(state.tx);
     renderAll();
-    try{ await fbDelete(id); state.online = true; }
-    catch(e){ state.online = false; alert('تعذّر الحذف من السيرفر، تأكد من الاتصال بالإنترنت'); }
+    try{
+      await fbDelete(id);
+      if(txToDel && txToDel.hasReceipt){ try{ await fbDeleteReceipt(id); }catch(e){} }
+      await fbAddHistory({action:'delete', txId:id, byId:state.me.id, byName:state.me.name, byRole:state.me.role||'', at:Date.now(),
+        before: txToDel? {type:txToDel.type, scope:txToDel.scope, amount:txToDel.amount, date:txToDel.date, note:txToDel.note||''} : null, after:null});
+      state.online = true;
+    }catch(e){ state.online = false; alert('تعذّر الحذف من السيرفر، تأكد من الاتصال بالإنترنت'); }
     renderAll();
+  }
+
+  // ---------- عرض إيصال ----------
+  async function viewReceipt(txId){
+    var win = window.open('', '_blank');
+    if(!win){ toast('يرجى السماح بالنوافذ المنبثقة لعرض الصورة'); return; }
+    win.document.write('<!DOCTYPE html><html dir="rtl"><head><meta charset="UTF-8"><title>الفاتورة</title>'+
+      '<style>body{margin:0;background:#111;color:#fff;display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:sans-serif;}img{max-width:100%;max-height:100vh;}</style></head>'+
+      '<body>...جارِ التحميل</body></html>');
+    win.document.close();
+    try{
+      var r = await fbGetReceipt(txId);
+      if(!r || !r.data){ win.document.body.textContent = 'تعذّر إيجاد الصورة'; return; }
+      var img = win.document.createElement('img');
+      img.src = r.data;
+      win.document.body.textContent = '';
+      win.document.body.appendChild(img);
+    }catch(e){
+      win.document.body.textContent = 'تعذّر تحميل الصورة';
+    }
+  }
+
+  // ---------- سجل التعديلات ----------
+  function histActionAr(a){
+    return {create:'أضاف حركة', edit:'عدّل حركة', delete:'حذف حركة', accept_transfer:'قبل تحويل'}[a] || a;
+  }
+  async function openHistorySheet(){
+    var html = '<div class="sheethandle"></div><div class="sheettitle">📜 سجل التعديلات</div>'+
+      '<div class="sheetsub">آخر ٥٠ عملية إضافة/تعديل/حذف على الحركات.</div>'+
+      '<div id="histList"><div class="empty">...جارِ التحميل</div></div>'+
+      '<div class="sheetbtns"><button class="btn btn-ghost" id="btnHistClose" style="width:100%;">إغلاق</button></div>';
+    sheetEl.innerHTML = html;
+    overlayEl.classList.add('open'); sheetEl.classList.add('open');
+    sheetEl.querySelector('#btnHistClose').addEventListener('click', closeSheet);
+    try{
+      var list = await fbGetHistory();
+      list = list.slice(0, 50);
+      var box = sheetEl.querySelector('#histList');
+      if(list.length===0){ box.innerHTML = '<div class="empty">لا يوجد سجل بعد</div>'; return; }
+      box.innerHTML = list.map(function(h){
+        var who = personLabel(h.byId, h.byName, h.byRole);
+        var line = esc(who)+' '+histActionAr(h.action);
+        var detail = '';
+        if(h.action==='edit' && h.before && h.after){
+          var diffs = [];
+          if(h.before.amount!==h.after.amount) diffs.push('المبلغ: '+fmtMoney(h.before.amount)+' ← '+fmtMoney(h.after.amount));
+          if(h.before.date!==h.after.date) diffs.push('التاريخ: '+h.before.date+' ← '+h.after.date);
+          if(h.before.scope!==h.after.scope) diffs.push('الفئة: '+scopeLabel(h.before.scope)+' ← '+scopeLabel(h.after.scope));
+          if((h.before.note||'')!==(h.after.note||'')) diffs.push('الملاحظة تغيّرت');
+          detail = diffs.join(' · ');
+        } else if(h.action==='delete' && h.before){
+          detail = fmtMoney(h.before.amount)+' بتاريخ '+h.before.date+(h.before.note?' — '+esc(h.before.note):'');
+        } else if(h.action==='create' && h.after){
+          detail = fmtMoney(h.after.amount)+' بتاريخ '+h.after.date;
+        }
+        return '<div class="histitem"><div class="ha">'+line+'</div>'+(detail?'<div class="hd">'+detail+'</div>':'')+'<div class="hd">'+fmtWhen(h.at)+'</div></div>';
+      }).join('');
+    }catch(e){
+      sheetEl.querySelector('#histList').innerHTML = '<div class="empty">تعذّر تحميل السجل</div>';
+    }
+  }
+
+  // ---------- تصدير Excel (CSV) وطباعة/PDF ----------
+  function openMoreMenuSheet(){
+    var html = '<div class="sheethandle"></div>'+
+      '<div class="sheettitle">خيارات إضافية</div>'+
+      '<div class="sheetbtns" style="flex-direction:column;">'+
+        '<button class="btn btn-ghost" id="mExportCsv" style="width:100%;margin-bottom:8px;">📊 تصدير Excel (CSV)</button>'+
+        '<button class="btn btn-ghost" id="mExportPdf" style="width:100%;margin-bottom:8px;">🖨️ طباعة / حفظ PDF</button>'+
+        '<button class="btn btn-ghost" id="mClose" style="width:100%;margin-bottom:8px;">🔒 ترحيل الحركات</button>'+
+        '<button class="btn btn-ghost" id="mHistory" style="width:100%;margin-bottom:8px;">📜 سجل التعديلات</button>'+
+        '<button class="btn btn-danger" id="mLogout" style="width:100%;">🚪 تسجيل خروج</button>'+
+      '</div>';
+    sheetEl.innerHTML = html;
+    overlayEl.classList.add('open'); sheetEl.classList.add('open');
+    sheetEl.querySelector('#mExportCsv').addEventListener('click', function(){ exportCSV(); closeSheet(); });
+    sheetEl.querySelector('#mExportPdf').addEventListener('click', function(){ printReport(); closeSheet(); });
+    sheetEl.querySelector('#mClose').addEventListener('click', openCloseSheet);
+    sheetEl.querySelector('#mHistory').addEventListener('click', openHistorySheet);
+    sheetEl.querySelector('#mLogout').addEventListener('click', function(){ if(confirm('تسجيل الخروج من هذا الجهاز؟')) logout(); });
+  }
+
+  function exportCSV(){
+    var list = computeFiltered();
+    if(list.length===0){ alert('ما في حركات للتصدير بالفترة المحددة'); return; }
+    var rows = [['التاريخ','النوع','الفئة','المبلغ','ملاحظة','المسجّل']];
+    list.forEach(function(t){
+      var who = personLabel(t.ownerId, t.ownerName, t.ownerRole);
+      rows.push([t.date, t.type==='income'?'قبض':'صرف', scopeLabel(t.scope), t.amount, t.note||'', who]);
+    });
+    var csv = '\uFEFF'+rows.map(function(r){
+      return r.map(function(c){ return '"'+String(c).replace(/"/g,'""')+'"'; }).join(',');
+    }).join('\r\n');
+    var blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url; a.download = 'hesabat-'+todayISO()+'.csv';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
+  }
+
+  function printReport(){
+    var list = computeFiltered();
+    var totals = computeTotals(list);
+    var range = getRangeDates();
+    var periodLabel = (range.from||'البداية')+' إلى '+(range.to||'اليوم');
+    var rowsHtml = list.map(function(t){
+      var who = personLabel(t.ownerId, t.ownerName, t.ownerRole);
+      return '<tr><td>'+esc(t.date)+'</td><td>'+(t.type==='income'?'قبض':'صرف')+'</td><td>'+scopeLabel(t.scope)+'</td><td>'+esc(who)+'</td><td>'+esc(t.note||'')+'</td><td>'+fmtMoney(t.amount)+'</td></tr>';
+    }).join('');
+    var win = window.open('', '_blank');
+    if(!win){ alert('يرجى السماح بالنوافذ المنبثقة لهذا الموقع لطباعة التقرير'); return; }
+    win.document.write(
+      '<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><title>تقرير دفتر الحسابات</title>'+
+      '<style>body{font-family:Tajawal, Arial, sans-serif; padding:24px; color:#1c2129;}h1{font-size:20px;margin:0 0 4px;}p{color:#666;margin:0 0 18px;font-size:13px;}table{width:100%;border-collapse:collapse;font-size:13px;}th,td{border:1px solid #ddd;padding:7px 9px;text-align:right;}th{background:#f3f4f6;}.tot{margin-top:16px;font-size:14px;}.tot b{display:inline-block;min-width:110px;}</style></head><body>'+
+      '<h1>تقرير دفتر الحسابات اليومي</h1>'+
+      '<p>الفترة: '+esc(periodLabel)+' — تاريخ الطباعة: '+todayISO()+'</p>'+
+      '<table><thead><tr><th>التاريخ</th><th>النوع</th><th>الفئة</th><th>المسجّل</th><th>ملاحظة</th><th>المبلغ</th></tr></thead><tbody>'+rowsHtml+'</tbody></table>'+
+      '<div class="tot"><div><b>إجمالي القبض:</b> '+fmtMoney(totals.total.income)+'</div><div><b>إجمالي الصرف:</b> '+fmtMoney(totals.total.expense)+'</div><div><b>الصافي:</b> '+fmtMoney(totals.total.net)+'</div></div>'+
+      '</body></html>'
+    );
+    win.document.close(); win.focus();
+    setTimeout(function(){ win.print(); }, 400);
+  }
+
+  // ---------- ترحيل ----------
+  function openCloseSheet(){
+    var current = state.closedUntil;
+    var html = '<div class="sheethandle"></div>'+
+      '<div class="sheettitle">🔒 ترحيل الحركات</div>'+
+      '<div class="sheetsub">أي حركة بتاريخ أقدم أو يساوي التاريخ اللي رح تختاره، رح تنقفل نهائياً — ما حدا بيقدر يعدّلها أو يحذفها بعدها.</div>'+
+      (current ? '<div class="field"><label>مرحّل حالياً لحد تاريخ</label><input type="text" value="'+esc(current)+'" disabled></div>' : '')+
+      '<div class="field"><label>رحّل كل الحركات لحد تاريخ</label><input type="date" id="fCloseDate" value="'+(current||'')+'" max="'+todayISO()+'"></div>'+
+      '<div class="sheetbtns"><button class="btn btn-ghost" id="btnCloseCancel">إلغاء</button><button class="btn btn-primary" id="btnCloseConfirm">ترحيل</button></div>';
+    sheetEl.innerHTML = html;
+    overlayEl.classList.add('open'); sheetEl.classList.add('open');
+    sheetEl.querySelector('#btnCloseCancel').addEventListener('click', closeSheet);
+    sheetEl.querySelector('#btnCloseConfirm').addEventListener('click', async function(){
+      var d = sheetEl.querySelector('#fCloseDate').value;
+      if(!d){ alert('اختر تاريخ الترحيل'); return; }
+      if(!confirm('متأكد؟ كل الحركات لغاية '+d+' رح تنقفل نهائياً من التعديل والحذف لكل المستخدمين.')) return;
+      var btn = sheetEl.querySelector('#btnCloseConfirm');
+      btn.disabled = true; btn.textContent = 'جارِ الترحيل...';
+      try{
+        var curMeta = await fbGetMeta();
+        curMeta.closedUntil = d;
+        await fbPutMeta(curMeta);
+        state.closedUntil = d;
+        closeSheet();
+        renderAll();
+      }catch(e){
+        alert('تعذّر الترحيل، تأكد من الاتصال بالإنترنت وحاول مرة ثانية');
+        btn.disabled = false; btn.textContent = 'ترحيل';
+      }
+    });
   }
 
   // ---------- المزامنة مع السيرفر ----------
   async function refreshFromServer(){
     try{
-      var list = await fbGetAll();
-      state.tx = list;
+      var results = await Promise.all([fbGetAll(), fbGetMeta(), fbGetTransfers(), fbGetAllProfiles()]);
+      var allTx = results[0];
+      state.closedUntil = results[1].closedUntil || null;
+      state.adminId = results[1].adminId || null;
+      state.transfers = results[2];
+      state.profiles = results[3];
+      state.tx = isAdmin() ? allTx : allTx.filter(function(t){ return t.ownerId===state.me.id; });
       state.online = true;
-      saveCache(list);
+      saveCache(state.tx);
     }catch(e){
       state.online = false;
     }
     renderAll();
   }
-
   function startPolling(){
     if(state.pollTimer) clearInterval(state.pollTimer);
     state.pollTimer = setInterval(refreshFromServer, POLL_MS);
@@ -536,29 +1119,90 @@
     });
   }
 
-  // ---------- onboarding (اسم فقط، بدون أي حساب) ----------
-  function openOnboarding(){
-    var html = '<div class="sheethandle"></div>'+
-      '<div class="sheettitle">أهلاً 👋</div>'+
-      '<div class="sheetsub">اكتب اسمك مرة وحدة بس عشان يميّز حركاتك عن حركات الطرف التاني.</div>'+
-      '<div class="field"><label>اسمك</label><input type="text" id="fName" placeholder="مثال: أحمد"></div>'+
-      '<div class="sheetbtns"><button class="btn btn-primary" id="btnStart" style="width:100%;">ابدأ</button></div>';
-    sheetEl.innerHTML = html;
+  // ---------- الملف الشخصي (اسم + مسمى وظيفي + نوع الحساب، محفوظ على السيرفر) ----------
+  var profileAcctChoice = 'both';
+  function openProfileSheet(isFirstTime){
+    profileAcctChoice = (state.me && state.me.accountType) || 'both';
+    renderProfileSheet(isFirstTime);
     overlayEl.classList.add('open'); sheetEl.classList.add('open');
-    var input = sheetEl.querySelector('#fName');
-    setTimeout(function(){ input.focus(); }, 200);
-    function start(){
-      var name = input.value.trim();
-      if(!name){ input.focus(); return; }
-      state.me = {id: uid(), name: name};
-      saveMe(state.me);
-      overlayEl.classList.remove('open'); sheetEl.classList.remove('open');
-      startApp();
-    }
-    sheetEl.querySelector('#btnStart').addEventListener('click', start);
-    input.addEventListener('keydown', function(e){ if(e.key==='Enter') start(); });
+  }
+  function renderProfileSheet(isFirstTime){
+    var html = '<div class="sheethandle"></div>'+
+      '<div class="sheettitle">'+(isFirstTime?'أهلاً 👋':'تعديل بياناتك')+'</div>'+
+      (isFirstTime? '<div class="sheetsub">اكتب اسمك مرة وحدة بس عشان يميّز حركاتك عن حركات الطرف التاني.</div>' : '')+
+      '<div class="field"><label>اسمك</label><input type="text" id="fPName" value="'+(state.me?esc(state.me.name):'')+'" placeholder="مثال: أحمد"></div>'+
+      '<div class="field"><label>المسمى الوظيفي (اختياري)</label><input type="text" id="fPRole" value="'+(state.me?esc(state.me.role||''):'')+'" placeholder="مثال: مدير المشتريات"></div>'+
+      '<div class="field"><label>نوع الحساب</label><div class="seg3">'+
+        '<button data-set-acct="personal" class="'+(profileAcctChoice==='personal'?'sel-personal':'')+'">شخصي فقط</button>'+
+        '<button data-set-acct="company" class="'+(profileAcctChoice==='company'?'sel-company':'')+'">للعمل فقط</button>'+
+        '<button data-set-acct="both" class="'+(profileAcctChoice==='both'?'sel-transfer':'')+'">كليهما</button>'+
+      '</div></div>'+
+      '<div class="sheetbtns">'+(isFirstTime?'':'<button class="btn btn-ghost" id="btnPCancel">إلغاء</button>')+'<button class="btn btn-primary" id="btnPSave" style="'+(isFirstTime?'width:100%;':'')+'">حفظ</button></div>';
+    sheetEl.innerHTML = html;
+    var nameI = sheetEl.querySelector('#fPName');
+    setTimeout(function(){ nameI.focus(); }, 200);
+    sheetEl.querySelectorAll('[data-set-acct]').forEach(function(el){ el.addEventListener('click', function(){ profileAcctChoice = el.getAttribute('data-set-acct'); renderProfileSheet(isFirstTime); }); });
+    var cancelBtn = sheetEl.querySelector('#btnPCancel');
+    if(cancelBtn) cancelBtn.addEventListener('click', closeSheet);
+    sheetEl.querySelector('#btnPSave').addEventListener('click', async function(){
+      var name = nameI.value.trim();
+      if(!name){ nameI.focus(); return; }
+      var role = sheetEl.querySelector('#fPRole').value.trim();
+      var btn = sheetEl.querySelector('#btnPSave');
+      btn.disabled = true; btn.textContent = 'جارِ الحفظ...';
+      try{
+        if(isFirstTime){
+          var meta = await fbGetMeta();
+          if(!meta.adminId){ meta.adminId = state.auth.localId; await fbPutMeta(meta); }
+          state.adminId = meta.adminId;
+        }
+        await fbPutProfile(state.auth.localId, {name:name, role:role, accountType:profileAcctChoice});
+        state.me = {id: state.auth.localId, name:name, role:role, accountType:profileAcctChoice};
+        overlayEl.classList.remove('open'); sheetEl.classList.remove('open');
+        startApp();
+      }catch(e){
+        alert('تعذّر الحفظ — تأكد من الاتصال بالإنترنت'); btn.disabled=false; btn.textContent='حفظ';
+      }
+    });
+    nameI.addEventListener('keydown', function(e){ if(e.key==='Enter') sheetEl.querySelector('#btnPSave').click(); });
   }
 
+  // ---------- تسجيل الدخول ----------
+  function renderLoginScreen(errMsg){
+    appEl.className = '';
+    appEl.innerHTML =
+      '<div class="loginscreen">'+
+        '<div class="logo">💰</div>'+
+        '<h2>دفتر الحسابات اليومي</h2>'+
+        '<p>سجّل دخولك بالإيميل وكلمة السر اللي أعطاك ياها أستاذ أحمد</p>'+
+        '<div class="loginform">'+
+          (errMsg ? '<div class="errbanner show">'+esc(errMsg)+'</div>' : '')+
+          '<div class="field"><label>الإيميل</label><input type="email" id="fEmail" autocomplete="username"></div>'+
+          '<div class="field"><label>كلمة السر</label><input type="password" id="fPass" autocomplete="current-password"></div>'+
+          '<button class="btn btn-primary" id="btnLogin" style="width:100%;">دخول</button>'+
+        '</div>'+
+      '</div>';
+    var emailI = document.getElementById('fEmail');
+    var passI = document.getElementById('fPass');
+    var btn = document.getElementById('btnLogin');
+    function doLogin(){
+      var email = emailI.value.trim(); var pass = passI.value;
+      if(!email || !pass){ return; }
+      btn.disabled = true; btn.textContent = 'جارِ الدخول...';
+      authSignIn(email, pass).then(function(){
+        boot();
+      }).catch(function(e){
+        var msg = 'تعذّر تسجيل الدخول، تأكد من الإيميل وكلمة السر';
+        if(String(e.message).indexOf('INVALID_LOGIN_CREDENTIALS')>-1 || String(e.message).indexOf('EMAIL_NOT_FOUND')>-1 || String(e.message).indexOf('INVALID_PASSWORD')>-1) msg = 'الإيميل أو كلمة السر غير صحيحة';
+        else if(String(e.message).indexOf('USER_DISABLED')>-1) msg = 'هذا الحساب معطّل';
+        renderLoginScreen(msg);
+      });
+    }
+    btn.addEventListener('click', doLogin);
+    passI.addEventListener('keydown', function(e){ if(e.key==='Enter') doLogin(); });
+  }
+
+  // ---------- الإقلاع ----------
   function startApp(){
     appEl.innerHTML = '';
     var existingHeader = document.querySelector('header');
@@ -566,13 +1210,16 @@
     var header = document.createElement('header');
     header.innerHTML =
       '<div class="headrow">'+
-        '<div class="brand"><div class="logo">💰</div><div><h1>دفتر الحسابات اليومي</h1><p><span class="dotstatus" id="statusDot"></span>'+esc(state.me.name)+' · مزامنة مباشرة</p></div></div>'+
+        '<div class="brand" id="meBrand" style="cursor:pointer;"><div class="logo">💰</div><div><h1>دفتر الحسابات اليومي</h1><p><span class="dotstatus" id="statusDot"></span>'+esc(state.me.name)+(state.me.role?' · '+esc(state.me.role):'')+' ✎</p></div></div>'+
         '<div style="display:flex;gap:8px;align-items:center;">'+
+          '<div class="icon-btn" id="moreBtn" title="خيارات">⋯</div>'+
           '<div class="icon-btn" id="refreshBtn" title="تحديث الآن">↻</div>'+
         '</div>'+
       '</div>';
     document.getElementById('shell').insertBefore(header, appEl);
     document.getElementById('refreshBtn').addEventListener('click', refreshFromServer);
+    document.getElementById('moreBtn').addEventListener('click', openMoreMenuSheet);
+    document.getElementById('meBrand').addEventListener('click', function(){ openProfileSheet(false); });
 
     if(!document.querySelector('.fab')){
       var fab = document.createElement('button');
@@ -581,80 +1228,46 @@
       document.getElementById('shell').appendChild(fab);
     }
 
-    // تحميل أولي: من الكاش فوراً، ثم من السيرفر
     state.tx = loadCache();
     renderAll();
     refreshFromServer();
     startPolling();
   }
 
-  function isPinOk(){
-    try{ return localStorage.getItem(LS_PINOK)==='1'; }catch(e){ return false; }
-  }
-  function markPinOk(){
-    try{ localStorage.setItem(LS_PINOK,'1'); }catch(e){}
-  }
-
-  function renderPinScreen(){
-    var entered = '';
-    appEl.className = '';
-    appEl.innerHTML =
-      '<div class="pinscreen">'+
-        '<div class="logo">🔒</div>'+
-        '<h2>دفتر الحسابات اليومي</h2>'+
-        '<p>أدخل الرمز السري للدخول</p>'+
-        '<div class="pindots" id="pinDots">'+
-          '<div class="pindot"></div><div class="pindot"></div><div class="pindot"></div><div class="pindot"></div>'+
-        '</div>'+
-        '<div class="pinpad" id="pinPad">'+
-          [1,2,3,4,5,6,7,8,9].map(function(n){ return '<button class="pinkey" data-k="'+n+'">'+n+'</button>'; }).join('')+
-          '<div class="pinkey ghost"></div>'+
-          '<button class="pinkey" data-k="0">0</button>'+
-          '<button class="pinkey ghost" data-k="back">⌫</button>'+
-        '</div>'+
-      '</div>';
-
-    var dotsEl = document.getElementById('pinDots');
-    function refreshDots(err){
-      var dots = dotsEl.querySelectorAll('.pindot');
-      dots.forEach(function(d,i){
-        d.className = 'pindot' + (i<entered.length ? (err?' err':' filled') : '');
-      });
-    }
-    function checkComplete(){
-      if(entered.length < APP_PIN.length) return;
-      if(entered === APP_PIN){
-        markPinOk();
-        boot();
-      } else {
-        refreshDots(true);
-        setTimeout(function(){ entered=''; refreshDots(false); }, 400);
-      }
-    }
-    document.getElementById('pinPad').addEventListener('click', function(e){
-      var btn = e.target.closest('[data-k]');
-      if(!btn) return;
-      var k = btn.getAttribute('data-k');
-      if(k==='back'){ entered = entered.slice(0,-1); refreshDots(false); return; }
-      if(entered.length >= APP_PIN.length) return;
-      entered += k;
-      refreshDots(false);
-      checkComplete();
-    });
-  }
-
-  function boot(){
+  async function boot(){
     appEl = document.getElementById('app');
     overlayEl = document.getElementById('overlay');
     sheetEl = document.getElementById('sheet');
     overlayEl.addEventListener('click', closeSheet);
 
-    if(!isPinOk()){ renderPinScreen(); return; }
+    if(!state.auth){ state.auth = loadAuth(); }
+    if(!state.auth){ renderLoginScreen(); return; }
 
-    state.me = loadMe();
-    appEl.className = '';
-    if(!state.me){ appEl.innerHTML = ''; openOnboarding(); }
-    else { startApp(); }
+    appEl.className = 'loading';
+    appEl.innerHTML = '<div class="spinner"></div><div>...جارِ التحميل</div>';
+    try{
+      await ensureToken();
+    }catch(e){
+      clearAuth(); state.auth = null; renderLoginScreen();
+      return;
+    }
+
+    try{
+      var results = await Promise.all([fbGetProfile(state.auth.localId), fbGetMeta()]);
+      var profile = results[0];
+      state.adminId = results[1].adminId || null;
+      state.closedUntil = results[1].closedUntil || null;
+      if(profile && profile.name){
+        state.me = {id: state.auth.localId, name: profile.name, role: profile.role||'', accountType: profile.accountType||'both'};
+        startApp();
+      } else {
+        appEl.className = ''; appEl.innerHTML = '';
+        openProfileSheet(true);
+      }
+    }catch(e){
+      appEl.className = 'loading';
+      appEl.innerHTML = '<div class="spinner"></div><div style="color:var(--expense);">تعذّر الاتصال — تحقق من الإنترنت وأعد فتح الصفحة</div>';
+    }
   }
 
   boot();
