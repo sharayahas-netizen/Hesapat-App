@@ -595,6 +595,8 @@
   }
 
   function renderAll(){
+    var hadSearchFocus = document.activeElement && document.activeElement.id==='searchInput';
+    var caretPos = hadSearchFocus ? document.activeElement.selectionStart : null;
     var filtered = computeFiltered();
     var totals = computeTotals(filtered);
     var html = '';
@@ -614,8 +616,10 @@
     attachEvents();
     var dot = document.getElementById('statusDot');
     if(dot){ dot.className = 'dotstatus '+(state.online?'on':'off'); }
-    var si = document.getElementById('searchInput');
-    if(si) setTimeout(function(){ si.focus(); si.setSelectionRange(si.value.length, si.value.length); }, 0);
+    if(hadSearchFocus){
+      var si = document.getElementById('searchInput');
+      if(si){ si.focus(); si.setSelectionRange(caretPos, caretPos); }
+    }
   }
 
   function attachEvents(){
