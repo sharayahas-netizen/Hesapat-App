@@ -654,9 +654,27 @@
         otherId: known[0]?known[0].id:'', otherName: known[0]?known[0].name:'', receiptDataUrl:null, hadReceipt:false};
     }
     renderAddSheet();
+    openSheetUI();
+  }
+  var savedScrollY = 0;
+  function openSheetUI(){
+    savedScrollY = window.scrollY || document.documentElement.scrollTop || 0;
+    document.body.style.position = 'fixed';
+    document.body.style.top = '-'+savedScrollY+'px';
+    document.body.style.left = '0';
+    document.body.style.right = '0';
+    document.body.style.width = '100%';
     overlayEl.classList.add('open'); sheetEl.classList.add('open');
   }
-  function closeSheet(){ overlayEl.classList.remove('open'); sheetEl.classList.remove('open'); state.editingId = null; }
+  function closeSheet(){
+    overlayEl.classList.remove('open'); sheetEl.classList.remove('open'); state.editingId = null;
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.left = '';
+    document.body.style.right = '';
+    document.body.style.width = '';
+    window.scrollTo(0, savedScrollY);
+  }
 
   function resizeImageFile(file, cb){
     var reader = new FileReader();
@@ -969,7 +987,7 @@
       '<div id="histList"><div class="empty">...جارِ التحميل</div></div>'+
       '<div class="sheetbtns"><button class="btn btn-ghost" id="btnHistClose" style="width:100%;">إغلاق</button></div>';
     sheetEl.innerHTML = html;
-    overlayEl.classList.add('open'); sheetEl.classList.add('open');
+    openSheetUI();
     sheetEl.querySelector('#btnHistClose').addEventListener('click', closeSheet);
     try{
       var list = await fbGetHistory();
@@ -1011,7 +1029,7 @@
         '<button class="btn btn-danger" id="mLogout" style="width:100%;">🚪 تسجيل خروج</button>'+
       '</div>';
     sheetEl.innerHTML = html;
-    overlayEl.classList.add('open'); sheetEl.classList.add('open');
+    openSheetUI();
     sheetEl.querySelector('#mExportCsv').addEventListener('click', function(){ exportCSV(); closeSheet(); });
     sheetEl.querySelector('#mExportPdf').addEventListener('click', function(){ printReport(); closeSheet(); });
     sheetEl.querySelector('#mClose').addEventListener('click', openCloseSheet);
@@ -1072,7 +1090,7 @@
       '<div class="field"><label>رحّل كل الحركات لحد تاريخ</label><input type="date" id="fCloseDate" value="'+(current||'')+'" max="'+todayISO()+'"></div>'+
       '<div class="sheetbtns"><button class="btn btn-ghost" id="btnCloseCancel">إلغاء</button><button class="btn btn-primary" id="btnCloseConfirm">ترحيل</button></div>';
     sheetEl.innerHTML = html;
-    overlayEl.classList.add('open'); sheetEl.classList.add('open');
+    openSheetUI();
     sheetEl.querySelector('#btnCloseCancel').addEventListener('click', closeSheet);
     sheetEl.querySelector('#btnCloseConfirm').addEventListener('click', async function(){
       var d = sheetEl.querySelector('#fCloseDate').value;
@@ -1124,7 +1142,7 @@
   function openProfileSheet(isFirstTime){
     profileAcctChoice = (state.me && state.me.accountType) || 'both';
     renderProfileSheet(isFirstTime);
-    overlayEl.classList.add('open'); sheetEl.classList.add('open');
+    openSheetUI();
   }
   function renderProfileSheet(isFirstTime){
     var html = '<div class="sheethandle"></div>'+
