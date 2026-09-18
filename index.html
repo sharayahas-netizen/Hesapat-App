@@ -55,7 +55,7 @@
   .icon-btn{width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:var(--surface-2);display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;color:var(--text);flex-shrink:0;}
   .icon-btn:active{transform:scale(.93);}
 
-  main{flex:1;padding-bottom:110px;}
+  #app{padding-bottom:110px;}
   .section{padding:14px 16px 0;}
   .section-title{font-size:13px;font-weight:700;color:var(--muted);margin:0 0 8px;display:flex;align-items:center;gap:6px;}
 
@@ -87,7 +87,7 @@
 
   .comparewrap{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px;}
   .comparewrap::-webkit-scrollbar{display:none;}
-  .pcard{flex:1;min-width:150px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;box-shadow:var(--shadow);}
+  .pcard{flex:0 0 auto;width:150px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;box-shadow:var(--shadow);}
   .pcard .phead{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
   .pcard .phead .av{width:26px;height:26px;border-radius:50%;background:var(--primary-bg);color:var(--primary-d);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0;}
   .pcard .phead b{font-size:13px;}
@@ -1030,6 +1030,7 @@
         '<button class="btn btn-ghost" id="mExportPdf" style="width:100%;margin-bottom:8px;">🖨️ طباعة / حفظ PDF</button>'+
         '<button class="btn btn-ghost" id="mClose" style="width:100%;margin-bottom:8px;">🔒 ترحيل الحركات</button>'+
         '<button class="btn btn-ghost" id="mHistory" style="width:100%;margin-bottom:8px;">📜 سجل التعديلات</button>'+
+        (isAdmin() ? '<button class="btn btn-ghost" id="mMerge" style="width:100%;margin-bottom:8px;">🔗 دمج حسابات قديمة</button>' : '')+
         '<button class="btn btn-danger" id="mLogout" style="width:100%;">🚪 تسجيل خروج</button>'+
       '</div>';
     sheetEl.innerHTML = html;
@@ -1038,7 +1039,71 @@
     sheetEl.querySelector('#mExportPdf').addEventListener('click', function(){ printReport(); closeSheet(); });
     sheetEl.querySelector('#mClose').addEventListener('click', openCloseSheet);
     sheetEl.querySelector('#mHistory').addEventListener('click', openHistorySheet);
+    var mergeBtn = sheetEl.querySelector('#mMerge');
+    if(mergeBtn) mergeBtn.addEventListener('click', openMergeSheet);
     sheetEl.querySelector('#mLogout').addEventListener('click', function(){ if(confirm('تسجيل الخروج من هذا الجهاز؟')) logout(); });
+  }
+
+  function orphanedIdentities(){
+    var profileIds = {}; state.profiles.forEach(function(p){ profileIds[p.id]=true; });
+    var seen = {}; var list = [];
+    state.tx.forEach(function(t){
+      if(!profileIds[t.ownerId] && !seen[t.ownerId]){ seen[t.ownerId]=true; list.push({id:t.ownerId, name:t.ownerName}); }
+    });
+    return list;
+  }
+
+  function openMergeSheet(){
+    var orphans = orphanedIdentities();
+    var html = '<div class="sheethandle"></div>'+
+      '<div class="sheettitle">🔗 دمج حسابات قديمة</div>'+
+      '<div class="sheetsub">حركات مسجّلة بهوية قديمة (من قبل تفعيل تسجيل الدخول) — اختار كل هوية قديمة تتبع لمين من الحسابات الحالية، ورح تنضم كل حركاتها لحسابه.</div>';
+    if(orphans.length===0){
+      html += '<div class="empty">لا توجد حركات قديمة تحتاج دمج ✓</div><div class="sheetbtns"><button class="btn btn-ghost" id="btnMergeClose" style="width:100%;">إغلاق</button></div>';
+      sheetEl.innerHTML = html; openSheetUI();
+      sheetEl.querySelector('#btnMergeClose').addEventListener('click', closeSheet);
+      return;
+    }
+    orphans.forEach(function(o, idx){
+      html += '<div class="card" style="margin-bottom:10px;">'+
+        '<div class="ctitle">'+esc(o.name||'(بدون اسم)')+'</div>'+
+        '<div class="field" style="margin-bottom:8px;"><label>دمج ضمن حساب</label>'+
+          '<select id="mergeSel'+idx+'">'+
+            state.profiles.map(function(p){ return '<option value="'+esc(p.id)+'">'+esc(personLabel(p.id,p.name,p.role))+'</option>'; }).join('')+
+          '</select>'+
+        '</div>'+
+        '<button class="btn btn-primary" data-merge-do="'+esc(o.id)+'" data-sel="mergeSel'+idx+'" style="width:100%;">دمج</button>'+
+      '</div>';
+    });
+    html += '<div class="sheetbtns"><button class="btn btn-ghost" id="btnMergeClose" style="width:100%;">إغلاق</button></div>';
+    sheetEl.innerHTML = html; openSheetUI();
+    sheetEl.querySelector('#btnMergeClose').addEventListener('click', closeSheet);
+    sheetEl.querySelectorAll('[data-merge-do]').forEach(function(btn){
+      btn.addEventListener('click', async function(){
+        var oldId = btn.getAttribute('data-merge-do');
+        var sel = sheetEl.querySelector('#'+btn.getAttribute('data-sel'));
+        var targetId = sel.value;
+        var target = state.profiles.find(function(p){return p.id===targetId;});
+        if(!target) return;
+        if(!confirm('متأكد؟ رح تنضم كل الحركات القديمة لهاي الهوية إلى حساب '+target.name+'.')) return;
+        btn.disabled = true; btn.textContent = 'جارِ الدمج...';
+        var affected = state.tx.filter(function(t){ return t.ownerId===oldId; });
+        try{
+          for(var i=0;i<affected.length;i++){
+            var t = affected[i];
+            var updated = Object.assign({}, t, {ownerId:target.id, ownerName:target.name, ownerRole:target.role||''});
+            delete updated.id;
+            await fbPut(t.id, updated);
+          }
+          toast('تم دمج '+affected.length+' حركة');
+          closeSheet();
+          refreshFromServer();
+        }catch(e){
+          alert('تعذّر إتمام الدمج بالكامل، حاول مرة ثانية');
+          refreshFromServer();
+        }
+      });
+    });
   }
 
   function exportCSV(){
