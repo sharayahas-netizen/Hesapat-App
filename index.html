@@ -663,22 +663,22 @@
   var savedScrollY = 0;
   function openSheetUI(){
     savedScrollY = window.scrollY || document.documentElement.scrollTop || 0;
-    document.body.style.position = 'fixed';
-    document.body.style.top = '-'+savedScrollY+'px';
-    document.body.style.left = '0';
-    document.body.style.right = '0';
-    document.body.style.width = '100%';
+    document.documentElement.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden';
     overlayEl.classList.add('open'); sheetEl.classList.add('open');
   }
   function closeSheet(){
     overlayEl.classList.remove('open'); sheetEl.classList.remove('open'); state.editingId = null;
-    document.body.style.position = '';
-    document.body.style.top = '';
-    document.body.style.left = '';
-    document.body.style.right = '';
-    document.body.style.width = '';
+    document.documentElement.style.overflow = '';
+    document.body.style.overflow = '';
     window.scrollTo(0, savedScrollY);
   }
+  document.addEventListener('focusin', function(e){
+    var t = e.target;
+    if(t && t.closest && t.closest('#sheet') && (t.tagName==='INPUT' || t.tagName==='TEXTAREA' || t.tagName==='SELECT')){
+      setTimeout(function(){ t.scrollIntoView({block:'center', behavior:'smooth'}); }, 300);
+    }
+  });
 
   function resizeImageFile(file, cb){
     var reader = new FileReader();
@@ -1135,9 +1135,12 @@
   }
   function startPolling(){
     if(state.pollTimer) clearInterval(state.pollTimer);
-    state.pollTimer = setInterval(refreshFromServer, POLL_MS);
+    state.pollTimer = setInterval(function(){
+      if(sheetEl && sheetEl.classList.contains('open')) return;
+      refreshFromServer();
+    }, POLL_MS);
     document.addEventListener('visibilitychange', function(){
-      if(document.visibilityState==='visible') refreshFromServer();
+      if(document.visibilityState==='visible' && !(sheetEl && sheetEl.classList.contains('open'))) refreshFromServer();
     });
   }
 
